@@ -13,3 +13,6 @@
 - [ ] Test multiplayer functionality with Redis backend
 - [ ] Deploy updated code to Vercel
 - [ ] Verify loading issue is resolved when playing with a friend
+
+## Fixed Issues
+- [x] Added proper Redis configuration checks to all API endpoints to return 500 error when environment variables are not set
