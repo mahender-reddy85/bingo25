@@ -1,7 +1,8 @@
 import { GameMode, Player, SyncState } from '../types';
+import { createClient } from 'redis';
 
-// In-memory game storage (not persistent, for demo purposes)
-const games = new Map<string, SyncState>();
+const redis = createClient({ url: process.env.REDIS_URL });
+redis.connect().catch(console.error);
 
 const generateSeed = (gameCode: string, round = 1) => {
   let hash = 0;
@@ -44,7 +45,7 @@ const createSeededRandom = (seed: number) => {
   }
 };
 
-export default function handler(req: any, res: any) {
+export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -72,7 +73,7 @@ export default function handler(req: any, res: any) {
     chatHistory: [{ senderId: 'system', senderName: 'System', message: `${player.name} created the game.`, isSystem: true }],
   };
 
-  games.set(gameCode, newState);
+  await redis.set(`game:${gameCode}`, JSON.stringify(newState));
 
   res.status(200).json(newState);
 }

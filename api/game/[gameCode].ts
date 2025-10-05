@@ -1,8 +1,9 @@
 import { GameAction, SyncState, Grid, WinPattern, GameMode } from '../../types';
 import { WIN_PATTERNS_CONFIG } from '../../constants';
+import { createClient } from 'redis';
 
-// Shared games map
-const games = new Map<string, SyncState>();
+const redis = createClient({ url: process.env.REDIS_URL });
+redis.connect().catch(console.error);
 
 const generateSeed = (gameCode: string, round = 1) => {
   let hash = 0;
@@ -64,7 +65,7 @@ const handleDeclareBingo = (state: SyncState, playerId: string, grid: Grid): Syn
   const newScore = winner.score + 1;
   const players = state.players.map(p => p.id === playerId ? { ...p, score: newScore } : p);
 
-  const winsNeeded = state.gameMode === 'BestOf3' ? 2 : (state.gameMode === 'BestOf5' ? 3 : 1);
+  const winsNeeded = state.gameMode === GameMode.BestOf3 ? 2 : (state.gameMode === GameMode.BestOf5 ? 3 : 1);
 
   if (newScore >= winsNeeded) {
     return {
@@ -132,17 +133,19 @@ const checkWin = (grid: Grid): { achieved: boolean; patterns: string[] } => {
   return { achieved: patterns.length > 0, patterns };
 };
 
-export default function handler(req: any, res: any) {
+export default async function handler(req: any, res: any) {
   const { gameCode } = req.query;
 
   if (!gameCode || typeof gameCode !== 'string') {
     return res.status(400).json({ error: 'Invalid game code' });
   }
 
-  const game = games.get(gameCode);
-  if (!game) {
+  const gameData = await redis.get(`game:${gameCode}`);
+  if (!gameData) {
     return res.status(404).json({ error: 'Game not found' });
   }
+
+  const game: SyncState = JSON.parse(gameData as string);
 
   if (req.method === 'GET') {
     return res.status(200).json(game);
@@ -177,7 +180,7 @@ export default function handler(req: any, res: any) {
         return res.status(400).json({ error: 'Unknown action type' });
     }
 
-    games.set(gameCode, newState);
+    await redis.set(`game:${gameCode}`, JSON.stringify(newState));
     return res.status(200).json(newState);
   }
 

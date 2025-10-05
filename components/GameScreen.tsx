@@ -5,7 +5,7 @@ import BingoGrid from './BingoGrid';
 import { BingoModal, GameOverModal } from './Modals';
 import { HomeIcon, SendIcon } from './Icons';
 import Confetti from './Confetti';
-import { gameService } from '../services/mockGameService';
+import { gameService } from '../services/gameService';
 
 // --- Seeded Random Functions ---
 const createSeededRandom = (seed: number) => {

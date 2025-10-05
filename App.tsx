@@ -4,7 +4,7 @@ import { GameState, GameMode } from './types';
 import GameScreen from './components/GameScreen';
 import { RulesModal } from './components/Modals';
 import { RulesIcon, SunIcon, MoonIcon } from './components/Icons';
-import { gameService } from './services/mockGameService';
+import { gameService } from './services/gameService';
 
 
 const DecorativeBingoBoard = () => (
