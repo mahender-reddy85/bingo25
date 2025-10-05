@@ -7,6 +7,11 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
+// Check if Redis is configured
+if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+  console.error('Redis environment variables not set');
+}
+
 const generateSeed = (gameCode: string, round = 1) => {
   let hash = 0;
   const str = `${gameCode}-${round}`;
@@ -140,6 +145,10 @@ export default async function handler(req: any, res: any) {
 
   if (!gameCode || typeof gameCode !== 'string') {
     return res.status(400).json({ error: 'Invalid game code' });
+  }
+
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return res.status(500).json({ error: 'Redis not configured' });
   }
 
   const gameData = await redis.get(`game:${gameCode}`);

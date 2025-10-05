@@ -6,6 +6,11 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
+// Check if Redis is configured
+if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+  console.error('Redis environment variables not set');
+}
+
 const generateSeed = (gameCode: string, round = 1) => {
   let hash = 0;
   const str = `${gameCode}-${round}`;
