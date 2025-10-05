@@ -246,7 +246,7 @@ const App: React.FC = () => {
     setGameState(GameState.Joining);
   };
 
-  const handleStartGame = async (code: string, name: string) => {
+const handleStartGame = async (code: string, name: string) => {
     if (code.length === 4 && name.trim()) {
         setGameCode(code);
         setPlayerName(name);

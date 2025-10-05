@@ -1,3 +1,4 @@
+
 import { CallerSpeed, WinPattern, WinState, Grid, WinPatternConfig } from './types';
 
 export const CALLER_SPEEDS: Record<CallerSpeed, number> = {
