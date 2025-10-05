@@ -52,24 +52,24 @@ const getWinningBlackoutCells = () => {
 }
 
 
-export const WIN_PATTERNS_CONFIG: Record<WinPattern, WinPatternConfig> = {
+export const WIN_PATTERNS_CONFIG: Record<WinPattern, Omit<WinPatternConfig, 'getWinningCells'>> = {
   // Rows
-  [WinPattern.ROW_0]: { name: 'Row 1', description: 'Complete the first row', check: grid => grid[0].every(c => c.marked), getWinningCells: () => getWinningRowCells(0) },
-  [WinPattern.ROW_1]: { name: 'Row 2', description: 'Complete the second row', check: grid => grid[1].every(c => c.marked), getWinningCells: () => getWinningRowCells(1) },
-  [WinPattern.ROW_2]: { name: 'Row 3', description: 'Complete the third row', check: grid => grid[2].every(c => c.marked), getWinningCells: () => getWinningRowCells(2) },
-  [WinPattern.ROW_3]: { name: 'Row 4', description: 'Complete the fourth row', check: grid => grid[3].every(c => c.marked), getWinningCells: () => getWinningRowCells(3) },
-  [WinPattern.ROW_4]: { name: 'Row 5', description: 'Complete the fifth row', check: grid => grid[4].every(c => c.marked), getWinningCells: () => getWinningRowCells(4) },
+  [WinPattern.ROW_0]: { name: 'Row 1', description: 'Complete the first row', check: grid => grid[0].every(c => c.marked) },
+  [WinPattern.ROW_1]: { name: 'Row 2', description: 'Complete the second row', check: grid => grid[1].every(c => c.marked) },
+  [WinPattern.ROW_2]: { name: 'Row 3', description: 'Complete the third row', check: grid => grid[2].every(c => c.marked) },
+  [WinPattern.ROW_3]: { name: 'Row 4', description: 'Complete the fourth row', check: grid => grid[3].every(c => c.marked) },
+  [WinPattern.ROW_4]: { name: 'Row 5', description: 'Complete the fifth row', check: grid => grid[4].every(c => c.marked) },
   // Columns
-  [WinPattern.COL_0]: { name: 'Column 1', description: 'Complete the first column', check: grid => grid.every(r => r[0].marked), getWinningCells: () => getWinningColCells(0) },
-  [WinPattern.COL_1]: { name: 'Column 2', description: 'Complete the second column', check: grid => grid.every(r => r[1].marked), getWinningCells: () => getWinningColCells(1) },
-  [WinPattern.COL_2]: { name: 'Column 3', description: 'Complete the third column', check: grid => grid.every(r => r[2].marked), getWinningCells: () => getWinningColCells(2) },
-  [WinPattern.COL_3]: { name: 'Column 4', description: 'Complete the fourth column', check: grid => grid.every(r => r[3].marked), getWinningCells: () => getWinningColCells(3) },
-  [WinPattern.COL_4]: { name: 'Column 5', description: 'Complete the fifth column', check: grid => grid.every(r => r[4].marked), getWinningCells: () => getWinningColCells(4) },
+  [WinPattern.COL_0]: { name: 'Column 1', description: 'Complete the first column', check: grid => grid.every(r => r[0].marked) },
+  [WinPattern.COL_1]: { name: 'Column 2', description: 'Complete the second column', check: grid => grid.every(r => r[1].marked) },
+  [WinPattern.COL_2]: { name: 'Column 3', description: 'Complete the third column', check: grid => grid.every(r => r[2].marked) },
+  [WinPattern.COL_3]: { name: 'Column 4', description: 'Complete the fourth column', check: grid => grid.every(r => r[3].marked) },
+  [WinPattern.COL_4]: { name: 'Column 5', description: 'Complete the fifth column', check: grid => grid.every(r => r[4].marked) },
   // Diagonals
-  [WinPattern.DIAG_1]: { name: 'Diagonal \\', description: 'Top-left to bottom-right', check: grid => grid.every((r, i) => r[i].marked), getWinningCells: getWinningDiag1Cells },
-  [WinPattern.DIAG_2]: { name: 'Diagonal /', description: 'Top-right to bottom-left', check: grid => grid.every((r, i) => r[4 - i].marked), getWinningCells: getWinningDiag2Cells },
+  [WinPattern.DIAG_1]: { name: 'Diagonal \\', description: 'Top-left to bottom-right', check: grid => grid.every((r, i) => r[i].marked) },
+  [WinPattern.DIAG_2]: { name: 'Diagonal /', description: 'Top-right to bottom-left', check: grid => grid.every((r, i) => r[4 - i].marked) },
   // Special
-  [WinPattern.CORNERS]: { name: 'Four Corners', description: 'Mark all four corners', check: grid => grid[0][0].marked && grid[0][4].marked && grid[4][0].marked && grid[4][4].marked, getWinningCells: getWinningCornerCells },
+  [WinPattern.CORNERS]: { name: 'Four Corners', description: 'Mark all four corners', check: grid => grid[0][0].marked && grid[0][4].marked && grid[4][0].marked && grid[4][4].marked },
   [WinPattern.STAMP]: { name: 'Stamp', description: 'Mark a 2x2 block', check: grid => {
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < 4; c++) {
@@ -77,7 +77,7 @@ export const WIN_PATTERNS_CONFIG: Record<WinPattern, WinPatternConfig> = {
       }
     }
     return false;
-  }, getWinningCells: getWinningStampCells },
-  [WinPattern.X_PATTERN]: { name: 'X-Pattern', description: 'Complete both diagonals', check: grid => WIN_PATTERNS_CONFIG[WinPattern.DIAG_1].check(grid) && WIN_PATTERNS_CONFIG[WinPattern.DIAG_2].check(grid), getWinningCells: () => [...getWinningDiag1Cells(), ...getWinningDiag2Cells()] },
-  [WinPattern.BLACKOUT]: { name: 'Blackout', description: 'Mark all numbers', check: grid => grid.flat().every(c => c.marked), getWinningCells: getWinningBlackoutCells },
+  }},
+  [WinPattern.X_PATTERN]: { name: 'X-Pattern', description: 'Complete both diagonals', check: grid => WIN_PATTERNS_CONFIG[WinPattern.DIAG_1].check(grid) && WIN_PATTERNS_CONFIG[WinPattern.DIAG_2].check(grid) },
+  [WinPattern.BLACKOUT]: { name: 'Blackout', description: 'Mark all numbers', check: grid => grid.flat().every(c => c.marked) },
 };
