@@ -10,18 +10,18 @@
   - Backend files import from local duplicates instead of shared root files.
 
 ## Plan
-- [ ] Delete duplicate `backend/src/constants.ts`
-- [ ] Delete duplicate `backend/src/types.ts`
-- [ ] Update imports in `backend/src/gameService.ts`:
+- [x] Delete duplicate `backend/src/constants.ts`
+- [x] Delete duplicate `backend/src/types.ts`
+- [x] Update imports in `backend/src/gameService.ts`:
   - Change `from './types.js'` to `from '../../types'`
   - Change `from './constants.js'` to `from '../../constants'`
-- [ ] Update imports in `backend/src/server.ts`:
+- [x] Update imports in `backend/src/server.ts`:
   - Change `from './gameService.js'` to `from './gameService'`
   - Change `from './types.js'` to `from '../../types'`
-- [ ] Resolve merge conflict in `App.tsx`:
+- [x] Resolve merge conflict in `App.tsx`:
   - Choose the `realGameService` import and async `handleStartGame` version.
-- [ ] Read remaining files to check for additional errors.
-- [ ] Run the project to verify no runtime errors.
+- [x] Read remaining files to check for additional errors.
+- [x] Run the project to verify no runtime errors.
 
 ## Followup Steps
 - Test frontend and backend compilation.
