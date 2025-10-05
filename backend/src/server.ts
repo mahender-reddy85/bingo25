@@ -1,8 +1,8 @@
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
-import { gameService } from './gameService.js';
-import { GameAction, Player } from './types.js';
+import { gameService } from './gameService';
+import { GameAction, Player } from './types';
 
 const app = express();
 const server = http.createServer(app);

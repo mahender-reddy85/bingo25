@@ -1,4 +1,4 @@
-import { CallerSpeed, WinPattern, WinState, Grid, WinPatternConfig } from './types.js';
+import { CallerSpeed, WinPattern, WinState, Grid, WinPatternConfig } from './types';
 
 export const CALLER_SPEEDS: Record<CallerSpeed, number> = {
   [CallerSpeed.Slow]: 3000,

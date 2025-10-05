@@ -1,11 +1,9 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GameState, GameMode } from './types';
 import GameScreen from './components/GameScreen';
 import { RulesModal } from './components/Modals';
 import { RulesIcon, SunIcon, MoonIcon } from './components/Icons';
-import { gameService } from './services/realGameService';
-
+import { gameService } from './services/mockGameService';
 
 const DecorativeBingoBoard = () => (
     <div className="relative -top-2 w-24 h-24 grid grid-cols-5 gap-0.5 p-0.5 bg-slate-900/50 rounded-lg transform-gpu -rotate-12 select-none opacity-50 hidden md:grid animate-text-pop-up">

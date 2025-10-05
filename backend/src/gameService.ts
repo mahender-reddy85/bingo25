@@ -1,5 +1,5 @@
-import { SyncState, Player, GameMode, GameAction, Grid, WinPattern, ChatMessage } from './types.js';
-import { WIN_PATTERNS_CONFIG } from './constants.js';
+import { SyncState, Player, GameMode, GameAction, Grid, WinPattern, ChatMessage } from './types';
+import { WIN_PATTERNS_CONFIG } from './constants';
 
 class GameService {
   private games = new Map<string, SyncState>();
