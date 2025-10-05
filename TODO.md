@@ -5,6 +5,8 @@
 - [x] Integrate Redis for persistent game state storage using @upstash/redis
 - [x] Update frontend to use new API-based gameService instead of mock service
 - [x] Implement polling for real-time updates
+- [x] Remove duplicate seeded random functions and create shared utils.ts
+- [x] Remove unused mockGameService.ts
 
 ## Remaining
 - [ ] Set up Upstash Redis instance and configure UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables in Vercel

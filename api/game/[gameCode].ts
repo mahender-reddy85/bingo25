@@ -1,6 +1,7 @@
 import { GameAction, SyncState, Grid, WinPattern, GameMode } from '../../types';
 import { WIN_PATTERNS_CONFIG } from '../../constants';
 import { Redis } from '@upstash/redis';
+import { generateSeed } from '../../utils';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
@@ -11,17 +12,6 @@ const redis = new Redis({
 if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
   console.error('Redis environment variables not set');
 }
-
-const generateSeed = (gameCode: string, round = 1) => {
-  let hash = 0;
-  const str = `${gameCode}-${round}`;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  return hash;
-};
 
 const handlePlayerReady = (state: SyncState, playerId: string): SyncState => {
   const players = state.players.map(p => p.id === playerId ? { ...p, isReady: true } : p);

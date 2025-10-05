@@ -1,5 +1,6 @@
 import { GameMode, Player, SyncState } from '../types';
 import { Redis } from '@upstash/redis';
+import { generateSeed, seededShuffle, createSeededRandom } from '../utils';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
@@ -11,45 +12,10 @@ if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN
   console.error('Redis environment variables not set');
 }
 
-const generateSeed = (gameCode: string, round = 1) => {
-  let hash = 0;
-  const str = `${gameCode}-${round}`;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  return hash;
-};
-
 const generateNumberSequence = (gameCode: string) => {
   const seed = generateSeed(gameCode, 0);
   const numbers = Array.from({ length: 25 }, (_, i) => i + 1);
   return seededShuffle(numbers, seed);
-};
-
-const seededShuffle = <T,>(array: T[], seed: number): T[] => {
-  const newArray = [...array];
-  const random = createSeededRandom(seed);
-  let currentIndex = newArray.length;
-  let randomIndex;
-
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(random() * currentIndex);
-    currentIndex--;
-    [newArray[currentIndex], newArray[randomIndex]] = [
-      newArray[randomIndex], newArray[currentIndex]];
-  }
-  return newArray;
-};
-
-const createSeededRandom = (seed: number) => {
-  return function() {
-    let t = seed += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  }
 };
 
 export default async function handler(req: any, res: any) {
