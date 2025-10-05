@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "type": "module",
   "main": "src/server.ts",
-  "scripts": {
-    "start": "node dist/server.js",
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc"
-  },
+ "scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d dist"
+}
+,
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
