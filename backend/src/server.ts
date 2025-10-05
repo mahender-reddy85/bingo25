@@ -36,6 +36,12 @@ app.post('/game/join', (req, res) => {
   if (!gameCode || !player) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
+
+  const game = gameService.getGame(gameCode);
+  if (!game) {
+    return res.status(404).json({ error: 'Game not found' });
+  }
+
   gameService.joinGame(gameCode, player);
   res.status(200).json({ message: 'Joined game' });
 });
