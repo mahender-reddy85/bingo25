@@ -1,9 +1,11 @@
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GameState, GameMode } from './types';
 import GameScreen from './components/GameScreen';
 import { RulesModal } from './components/Modals';
 import { RulesIcon, SunIcon, MoonIcon } from './components/Icons';
 import { gameService } from './services/mockGameService';
+
 
 const DecorativeBingoBoard = () => (
     <div className="relative -top-2 w-24 h-24 grid grid-cols-5 gap-0.5 p-0.5 bg-slate-900/50 rounded-lg transform-gpu -rotate-12 select-none opacity-50 hidden md:grid animate-text-pop-up">
@@ -246,22 +248,22 @@ const App: React.FC = () => {
     setGameState(GameState.Joining);
   };
 
-const handleStartGame = async (code: string, name: string) => {
+  const handleStartGame = (code: string, name: string) => {
     if (code.length === 4 && name.trim()) {
         setGameCode(code);
         setPlayerName(name);
 
         const player = { id: playerId, name, score: 0, isReady: false, isConnected: false };
-        const existingGame = await gameService.getGame(code);
-
+        const existingGame = gameService.getGame(code);
+        
         if (existingGame) { // Joining
              if (existingGame.players.length >= 2 && !existingGame.players.find(p => p.id === playerId)) {
                 alert("Game is full!");
                 return;
             }
-            await gameService.joinGame(code, player);
+            gameService.joinGame(code, player);
         } else { // Creating
-            await gameService.createGame(code, gameMode, player);
+            gameService.createGame(code, gameMode, player);
         }
 
         setGameState(GameState.InProgress);
