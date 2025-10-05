@@ -1,7 +1,7 @@
-import { GameAction, SyncState, Grid, WinPattern, GameMode } from '../../types';
-import { WIN_PATTERNS_CONFIG } from '../../constants';
+import { GameAction, SyncState, Grid, WinPattern, GameMode } from '../../types.js';
+import { WIN_PATTERNS_CONFIG } from '../../constants.js';
 import { Redis } from '@upstash/redis';
-import { generateSeed } from '../../utils';
+import { generateSeed } from '../../utils.js';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,

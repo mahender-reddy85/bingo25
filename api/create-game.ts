@@ -1,6 +1,6 @@
-import { GameMode, Player, SyncState } from '../types';
+import { GameMode, Player, SyncState } from '../types.js';
 import { Redis } from '@upstash/redis';
-import { generateSeed, seededShuffle, createSeededRandom } from '../utils';
+import { generateSeed, seededShuffle, createSeededRandom } from '../utils.js';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
