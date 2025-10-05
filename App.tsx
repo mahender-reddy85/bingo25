@@ -248,25 +248,31 @@ const App: React.FC = () => {
     setGameState(GameState.Joining);
   };
 
-  const handleStartGame = (code: string, name: string) => {
+  const handleStartGame = async (code: string, name: string) => {
     if (code.length === 4 && name.trim()) {
         setGameCode(code);
         setPlayerName(name);
 
         const player = { id: playerId, name, score: 0, isReady: false, isConnected: false };
-        const existingGame = gameService.getGame(code);
-        
-        if (existingGame) { // Joining
-             if (existingGame.players.length >= 2 && !existingGame.players.find(p => p.id === playerId)) {
-                alert("Game is full!");
-                return;
-            }
-            gameService.joinGame(code, player);
-        } else { // Creating
-            gameService.createGame(code, gameMode, player);
-        }
 
-        setGameState(GameState.InProgress);
+        try {
+            const existingGame = await gameService.getGame(code);
+
+            if (existingGame) { // Joining
+                 if (existingGame.players.length >= 2 && !existingGame.players.find(p => p.id === playerId)) {
+                    alert("Game is full!");
+                    return;
+                }
+                await gameService.joinGame(code, player);
+            } else { // Creating
+                await gameService.createGame(code, gameMode, player);
+            }
+
+            setGameState(GameState.InProgress);
+        } catch (error) {
+            console.error('Failed to start game:', error);
+            alert('Failed to start game. Please try again.');
+        }
     }
   };
 

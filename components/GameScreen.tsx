@@ -186,7 +186,7 @@ const ChatBox: React.FC<{
 
 
 const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, playerName, playerId }) => {
-  const [syncState, setSyncState] = useState<SyncState | null>(gameService.getGame(gameCode));
+  const [syncState, setSyncState] = useState<SyncState | null>(null);
   const [playerGrid, setPlayerGrid] = useState<Grid>(() => generateGrid(syncState?.roundSeed ?? 0));
   const [swapSelection, setSwapSelection] = useState<{ r: number; c: number } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -200,9 +200,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
         setSyncState(newState);
     };
     gameService.onUpdate(gameCode, handleUpdate);
+    gameService.startPolling(gameCode);
 
     return () => {
         gameService.offUpdate(gameCode, handleUpdate);
+        gameService.stopPolling(gameCode);
     };
   }, [gameCode]);
 
@@ -249,9 +251,13 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   }, [syncState]);
 
 
-  const callNextNumber = useCallback(() => {
+  const callNextNumber = useCallback(async () => {
     if(swapSelection) setSwapSelection(null);
-    gameService.sendAction(gameCode, { type: 'CALL_NUMBER', payload: { playerId } });
+    try {
+      await gameService.sendAction(gameCode, { type: 'CALL_NUMBER', payload: { playerId } });
+    } catch (error) {
+      console.error('Failed to call number:', error);
+    }
   }, [gameCode, playerId, swapSelection]);
 
   const handleCellClick = (r: number, c: number) => {
@@ -283,21 +289,37 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     }
   };
 
-  const checkBingo = () => {
-    gameService.sendAction(gameCode, { type: 'DECLARE_BINGO', payload: { playerId, grid: playerGrid } });
+  const checkBingo = async () => {
+    try {
+      await gameService.sendAction(gameCode, { type: 'DECLARE_BINGO', payload: { playerId, grid: playerGrid } });
+    } catch (error) {
+      console.error('Failed to declare bingo:', error);
+    }
   };
   
-  const handleReadyClick = () => {
+  const handleReadyClick = async () => {
       if(swapSelection) setSwapSelection(null);
-      gameService.sendAction(gameCode, { type: 'PLAYER_READY', payload: { playerId } });
+      try {
+        await gameService.sendAction(gameCode, { type: 'PLAYER_READY', payload: { playerId } });
+      } catch (error) {
+        console.error('Failed to set ready:', error);
+      }
   };
 
-  const handleNextRound = () => {
-      gameService.sendAction(gameCode, { type: 'NEXT_ROUND', payload: { playerId } });
+  const handleNextRound = async () => {
+      try {
+        await gameService.sendAction(gameCode, { type: 'NEXT_ROUND', payload: { playerId } });
+      } catch (error) {
+        console.error('Failed to next round:', error);
+      }
   };
 
-  const handleSendMessage = (message: string) => {
-    gameService.sendAction(gameCode, { type: 'SEND_MESSAGE', payload: { playerId, message } });
+  const handleSendMessage = async (message: string) => {
+    try {
+      await gameService.sendAction(gameCode, { type: 'SEND_MESSAGE', payload: { playerId, message } });
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
 
   if (!syncState || !me) {
