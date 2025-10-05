@@ -131,59 +131,71 @@ const checkWin = (grid: Grid): { achieved: boolean; patterns: string[] } => {
 };
 
 export default async function handler(req: any, res: any) {
-  const { gameCode } = req.query;
+  try {
+    console.log('Game action request:', { method: req.method, query: req.query, body: req.body });
 
-  if (!gameCode || typeof gameCode !== 'string') {
-    return res.status(400).json({ error: 'Invalid game code' });
-  }
+    const { gameCode } = req.query;
 
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-    return res.status(500).json({ error: 'Redis not configured' });
-  }
-
-  const gameData = await redis.get(`game:${gameCode}`);
-  if (!gameData) {
-    return res.status(404).json({ error: 'Game not found' });
-  }
-
-  const game: SyncState = JSON.parse(gameData as string);
-
-  if (req.method === 'GET') {
-    return res.status(200).json(game);
-  }
-
-  if (req.method === 'POST') {
-    const action: GameAction = req.body;
-
-    if (!action || !action.type) {
-      return res.status(400).json({ error: 'Invalid action' });
+    if (!gameCode || typeof gameCode !== 'string') {
+      return res.status(400).json({ error: 'Invalid game code' });
     }
 
-    let newState = { ...game };
-
-    switch (action.type) {
-      case 'PLAYER_READY':
-        newState = handlePlayerReady(newState, action.payload.playerId);
-        break;
-      case 'CALL_NUMBER':
-        newState = handleCallNumber(newState, action.payload.playerId);
-        break;
-      case 'DECLARE_BINGO':
-        newState = handleDeclareBingo(newState, action.payload.playerId, action.payload.grid);
-        break;
-      case 'NEXT_ROUND':
-        newState = handleNextRound(newState, action.payload.playerId);
-        break;
-      case 'SEND_MESSAGE':
-        newState = handleSendMessage(newState, action.payload.playerId, action.payload.message);
-        break;
-      default:
-        return res.status(400).json({ error: 'Unknown action type' });
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+      console.error('Redis environment variables not set');
+      return res.status(500).json({ error: 'Redis not configured' });
     }
 
-    await redis.set(`game:${gameCode}`, JSON.stringify(newState));
-    return res.status(200).json(newState);
-  }
+    const gameData = await redis.get(`game:${gameCode}`);
+    if (!gameData) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
 
-  return res.status(405).json({ error: 'Method not allowed' });
+    const game: SyncState = JSON.parse(gameData as string);
+
+    if (req.method === 'GET') {
+      console.log('Returning game state for:', gameCode);
+      return res.status(200).json(game);
+    }
+
+    if (req.method === 'POST') {
+      const action: GameAction = req.body;
+
+      if (!action || !action.type) {
+        return res.status(400).json({ error: 'Invalid action' });
+      }
+
+      console.log('Processing action:', action.type, 'for game:', gameCode);
+
+      let newState = { ...game };
+
+      switch (action.type) {
+        case 'PLAYER_READY':
+          newState = handlePlayerReady(newState, action.payload.playerId);
+          break;
+        case 'CALL_NUMBER':
+          newState = handleCallNumber(newState, action.payload.playerId);
+          break;
+        case 'DECLARE_BINGO':
+          newState = handleDeclareBingo(newState, action.payload.playerId, action.payload.grid);
+          break;
+        case 'NEXT_ROUND':
+          newState = handleNextRound(newState, action.payload.playerId);
+          break;
+        case 'SEND_MESSAGE':
+          newState = handleSendMessage(newState, action.payload.playerId, action.payload.message);
+          break;
+        default:
+          return res.status(400).json({ error: 'Unknown action type' });
+      }
+
+      await redis.set(`game:${gameCode}`, JSON.stringify(newState));
+      console.log('Game state updated for action:', action.type);
+      return res.status(200).json(newState);
+    }
+
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (error) {
+    console.error('Error in game/[gameCode] handler:', error);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
 }

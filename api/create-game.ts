@@ -14,39 +14,51 @@ const generateNumberSequence = (gameCode: string) => {
 };
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  try {
+    console.log('Create game request:', { method: req.method, body: req.body });
+
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    // Check if Redis is configured
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+      console.error('Redis environment variables not set');
+      return res.status(500).json({ error: 'Redis not configured' });
+    }
+
+    const { gameCode, gameMode, player }: { gameCode: string; gameMode: GameMode; player: Player } = req.body;
+
+    if (!gameCode || !gameMode || !player) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    console.log('Creating game with code:', gameCode, 'mode:', gameMode, 'player:', player);
+
+    const initialSeed = generateSeed(gameCode);
+    const numberSequence = generateNumberSequence(gameCode);
+    const hostWithStatus = { ...player, isConnected: true };
+
+    const newState: SyncState = {
+      gameCode,
+      players: [hostWithStatus],
+      numberSequence,
+      calledNumberIndex: -1,
+      gameStatus: 'waiting',
+      round: 1,
+      roundSeed: initialSeed,
+      currentTurnId: player.id,
+      gameMode,
+      chatHistory: [{ senderId: 'system', senderName: 'System', message: `${player.name} created the game.`, isSystem: true }],
+    };
+
+    console.log('Saving game state to Redis:', `game:${gameCode}`);
+    await redis.set(`game:${gameCode}`, JSON.stringify(newState));
+
+    console.log('Game created successfully');
+    res.status(200).json(newState);
+  } catch (error) {
+    console.error('Error in create-game handler:', error);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
   }
-
-  // Check if Redis is configured
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-    return res.status(500).json({ error: 'Redis not configured' });
-  }
-
-  const { gameCode, gameMode, player }: { gameCode: string; gameMode: GameMode; player: Player } = req.body;
-
-  if (!gameCode || !gameMode || !player) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  const initialSeed = generateSeed(gameCode);
-  const numberSequence = generateNumberSequence(gameCode);
-  const hostWithStatus = { ...player, isConnected: true };
-
-  const newState: SyncState = {
-    gameCode,
-    players: [hostWithStatus],
-    numberSequence,
-    calledNumberIndex: -1,
-    gameStatus: 'waiting',
-    round: 1,
-    roundSeed: initialSeed,
-    currentTurnId: player.id,
-    gameMode,
-    chatHistory: [{ senderId: 'system', senderName: 'System', message: `${player.name} created the game.`, isSystem: true }],
-  };
-
-  await redis.set(`game:${gameCode}`, JSON.stringify(newState));
-
-  res.status(200).json(newState);
 }

@@ -16,3 +16,4 @@
 
 ## Fixed Issues
 - [x] Added proper Redis configuration checks to all API endpoints to return 500 error when environment variables are not set
+- [x] Added comprehensive error handling and logging to all API endpoints for better debugging
