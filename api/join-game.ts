@@ -1,8 +1,10 @@
 import { Player, SyncState } from '../types';
-import { createClient } from 'redis';
+import { Redis } from '@upstash/redis';
 
-const redis = createClient({ url: process.env.REDIS_URL });
-redis.connect().catch(console.error);
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {

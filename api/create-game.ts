@@ -1,8 +1,10 @@
 import { GameMode, Player, SyncState } from '../types';
-import { createClient } from 'redis';
+import { Redis } from '@upstash/redis';
 
-const redis = createClient({ url: process.env.REDIS_URL });
-redis.connect().catch(console.error);
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
 
 const generateSeed = (gameCode: string, round = 1) => {
   let hash = 0;
