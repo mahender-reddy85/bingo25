@@ -3,16 +3,6 @@ import { WIN_PATTERNS_CONFIG } from '../../constants.js';
 import { Redis } from '@upstash/redis';
 import { generateSeed } from '../../utils.js';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-// Check if Redis is configured
-if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-  console.error('Redis environment variables not set');
-}
-
 const handlePlayerReady = (state: SyncState, playerId: string): SyncState => {
   const players = state.players.map(p => p.id === playerId ? { ...p, isReady: true } : p);
   const allReady = players.length === 2 && players.every(p => p.isReady);
@@ -144,6 +134,11 @@ export default async function handler(req: any, res: any) {
       console.error('Redis environment variables not set');
       return res.status(500).json({ error: 'Redis not configured' });
     }
+
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
 
     const gameData = await redis.get(`game:${gameCode}`);
     if (!gameData) {

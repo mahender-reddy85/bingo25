@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { GameMode, Player } from '../types';
+import { GameMode, Player } from '../types.js';
 
 interface ModalProps {
   isOpen: boolean;

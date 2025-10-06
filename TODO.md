@@ -18,3 +18,4 @@
 - [x] Added proper Redis configuration checks to all API endpoints to return 500 error when environment variables are not set
 - [x] Added comprehensive error handling and logging to all API endpoints for better debugging
 - [x] Reverted all Tailwind CSS changes back to original CDN setup
+- [x] Moved Redis client initialization inside API handlers to prevent module-level errors when environment variables are missing

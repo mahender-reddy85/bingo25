@@ -1,4 +1,4 @@
-import { SyncState, Player, GameMode, GameAction } from '../types';
+import { SyncState, Player, GameMode, GameAction } from '../types.js';
 
 type Listener = (data: SyncState) => void;
 

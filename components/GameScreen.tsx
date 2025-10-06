@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Grid, WinState, WinPattern, GameMode, SyncState, Player, ChatMessage } from '../types';
-import { WIN_PATTERNS_CONFIG } from '../constants';
+import { Grid, WinState, WinPattern, GameMode, SyncState, Player, ChatMessage } from '../types.js';
+import { WIN_PATTERNS_CONFIG } from '../constants.js';
 import BingoGrid from './BingoGrid';
 import { BingoModal, GameOverModal } from './Modals';
 import { HomeIcon, SendIcon } from './Icons';

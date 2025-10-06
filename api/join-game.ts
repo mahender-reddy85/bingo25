@@ -1,17 +1,6 @@
 import { Player, SyncState } from '../types.js';
 import { Redis } from '@upstash/redis';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-
-// Check if Redis is configured
-if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-  console.error('Redis environment variables not set');
-}
-
 export default async function handler(req: any, res: any) {
   try {
     console.log('Join game request:', { method: req.method, body: req.body });
@@ -25,6 +14,11 @@ export default async function handler(req: any, res: any) {
       console.error('Redis environment variables not set');
       return res.status(500).json({ error: 'Redis not configured' });
     }
+
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
 
     const { gameCode, player }: { gameCode: string; player: Player } = req.body;
 

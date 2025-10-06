@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { GameState, GameMode } from './types';
+import { GameState, GameMode } from './types.js';
 import GameScreen from './components/GameScreen';
 import { RulesModal } from './components/Modals';
 import { RulesIcon, SunIcon, MoonIcon } from './components/Icons';

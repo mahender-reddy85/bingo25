@@ -1,6 +1,6 @@
 import React from 'react';
-import { Grid, WinState, WinPattern } from '../types';
-import { WIN_PATTERNS_CONFIG } from '../constants';
+import { Grid, WinState, WinPattern } from '../types.js';
+import { WIN_PATTERNS_CONFIG } from '../constants.js';
 
 interface BingoGridProps {
   grid: Grid;

@@ -2,11 +2,6 @@ import { GameMode, Player, SyncState } from '../types.js';
 import { Redis } from '@upstash/redis';
 import { generateSeed, seededShuffle, createSeededRandom } from '../utils.js';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
 const generateNumberSequence = (gameCode: string) => {
   const seed = generateSeed(gameCode, 0);
   const numbers = Array.from({ length: 25 }, (_, i) => i + 1);
@@ -26,6 +21,11 @@ export default async function handler(req: any, res: any) {
       console.error('Redis environment variables not set');
       return res.status(500).json({ error: 'Redis not configured' });
     }
+
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
 
     const { gameCode, gameMode, player }: { gameCode: string; gameMode: GameMode; player: Player } = req.body;
 
