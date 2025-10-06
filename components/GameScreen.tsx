@@ -18,9 +18,11 @@ interface GameScreenProps {
   playerId: string;
 }
 
-const generateGrid = (seed: number): Grid => {
+const generateGrid = (gameSeed: number, playerId: string): Grid => {
   const numbers = Array.from({ length: 25 }, (_, i) => i + 1);
-  const shuffled = seededShuffle(numbers, seed);
+  // Create player-specific seed by combining game seed with player ID
+  const playerSeed = gameSeed + playerId.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+  const shuffled = seededShuffle(numbers, playerSeed);
   const grid: Grid = [];
   for (let i = 0; i < 5; i++) {
     grid.push(
@@ -166,7 +168,7 @@ const ChatBox: React.FC<{
 
 const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, playerName, playerId }) => {
   const [syncState, setSyncState] = useState<SyncState | null>(null);
-  const [playerGrid, setPlayerGrid] = useState<Grid>(() => generateGrid(syncState?.roundSeed ?? 0));
+  const [playerGrid, setPlayerGrid] = useState<Grid>(() => generateGrid(0, playerId));
   const [swapSelection, setSwapSelection] = useState<{ r: number; c: number } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const prevStateRef = useRef<SyncState | null>(syncState);
@@ -190,10 +192,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   useEffect(() => {
     if (syncState) {
         if (typeof syncState.roundSeed === 'number') {
-            setPlayerGrid(generateGrid(syncState.roundSeed));
+            setPlayerGrid(generateGrid(syncState.roundSeed, playerId));
         }
     }
-  }, [syncState?.roundSeed]);
+  }, [syncState?.roundSeed, playerId]);
 
 
   // Effect for confetti
@@ -239,19 +241,32 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     }
   }, [gameCode, playerId, swapSelection]);
 
+  const revealNumber = useCallback(async (number: number) => {
+    if(swapSelection) setSwapSelection(null);
+    try {
+      await gameService.sendAction(gameCode, { type: 'REVEAL_NUMBER', payload: { playerId, number } });
+    } catch (error) {
+      console.error('Failed to reveal number:', error);
+    }
+  }, [gameCode, playerId, swapSelection]);
+
   const handleCellClick = (r: number, c: number) => {
     if (syncState?.gameStatus === 'roundOver' || syncState?.gameStatus === 'gameOver') return;
 
     if (isGridLocked) {
         const cellNumber = playerGrid[r][c].number;
         if (calledNumbers.has(cellNumber)) {
+            // Mark/unmark the cell if the number has been revealed
             const newGrid = playerGrid.map(row => row.map(cell => ({...cell})));
             newGrid[r][c].marked = !newGrid[r][c].marked;
             setPlayerGrid(newGrid);
+        } else if (isMyTurn && !playerGrid[r][c].marked) {
+            // Reveal the number if it's the player's turn and the cell isn't already marked
+            revealNumber(cellNumber);
         }
         return;
     }
-    
+
     if (!swapSelection) {
       setSwapSelection({ r, c });
     } else {

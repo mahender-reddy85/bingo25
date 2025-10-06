@@ -95,6 +95,7 @@ export interface SyncState {
 export type GameAction =
     | { type: 'PLAYER_READY'; payload: { playerId: string } }
     | { type: 'CALL_NUMBER'; payload: { playerId: string } }
+    | { type: 'REVEAL_NUMBER'; payload: { playerId: string, number: number } }
     | { type: 'DECLARE_BINGO'; payload: { playerId: string, grid: Grid } }
     | { type: 'NEXT_ROUND'; payload: { playerId: string } }
     | { type: 'SEND_MESSAGE'; payload: { playerId: string, message: string } };

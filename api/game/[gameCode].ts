@@ -38,6 +38,37 @@ const handleCallNumber = (state: SyncState, playerId: string): SyncState => {
   };
 };
 
+const handleRevealNumber = (state: SyncState, playerId: string, number: number): SyncState => {
+  if (state.gameStatus === 'playing' && state.currentTurnId !== playerId) {
+    return state;
+  }
+
+  if (state.gameStatus !== 'playing' && state.gameStatus !== 'starting') {
+    return state;
+  }
+
+  // Check if the number is already revealed
+  const alreadyRevealed = state.calledNumberIndex >= 0 && state.numberSequence.slice(0, state.calledNumberIndex + 1).includes(number);
+  if (alreadyRevealed) {
+    return state;
+  }
+
+  // Find the index of the number in the sequence
+  const numberIndex = state.numberSequence.indexOf(number);
+  if (numberIndex === -1) {
+    return state;
+  }
+
+  const nextTurnPlayer = state.players.find(p => p.id !== playerId);
+
+  return {
+    ...state,
+    gameStatus: 'playing',
+    calledNumberIndex: numberIndex,
+    currentTurnId: nextTurnPlayer?.id,
+  };
+};
+
 const handleDeclareBingo = (state: SyncState, playerId: string, grid: Grid): SyncState => {
   if (state.gameStatus !== 'playing') return state;
 
@@ -169,6 +200,9 @@ export default async function handler(req: any, res: any) {
           break;
         case 'CALL_NUMBER':
           newState = handleCallNumber(newState, action.payload.playerId);
+          break;
+        case 'REVEAL_NUMBER':
+          newState = handleRevealNumber(newState, action.payload.playerId, action.payload.number);
           break;
         case 'DECLARE_BINGO':
           newState = handleDeclareBingo(newState, action.payload.playerId, action.payload.grid);
