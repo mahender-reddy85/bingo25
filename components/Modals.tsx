@@ -31,12 +31,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   
   const modalContent = (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={onClose ? handleClose : undefined}>
-      <div className="bg-[var(--bg-panel-solid)] rounded-xl shadow-2xl w-full max-w-md text-white border border-[var(--border-color)] transform transition-all duration-300 scale-95 opacity-0 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+      <div className="bg-[var(--bg-panel-solid)] rounded-xl shadow-2xl w-full max-w-sm text-white border border-[var(--border-color)] transform transition-all duration-300 scale-95 opacity-0 animate-fade-in-up max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b border-[var(--border-color)]">
           <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)]">{title}</h2>
           {onClose && <button onClick={handleClose} className="text-slate-400 hover:text-white">&times;</button>}
         </div>
-        <div className="p-6 max-h-[70vh] overflow-y-auto">
+        <div className="p-4 max-h-[65vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
           {children}
         </div>
       </div>

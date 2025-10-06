@@ -128,7 +128,7 @@ const ChatBox: React.FC<{
     return (
         <div className="flex-grow flex flex-col bg-[var(--bg-secondary)] rounded-lg min-h-0">
             <p className="text-sm font-semibold text-[var(--text-secondary)] text-center p-2 border-b border-[var(--border-color)]">CHAT</p>
-            <div className="flex-grow p-3 space-y-3 overflow-y-auto h-48 md:h-auto">
+            <div className="flex-grow p-3 space-y-3 overflow-y-auto h-32 md:h-auto max-h-48 md:max-h-72 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
                 {chatHistory.map((chat, index) => (
                     <div key={index}>
                         {chat.isSystem ? (
@@ -306,9 +306,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center p-4 md:p-8">
+    <div className="min-h-screen w-full flex flex-col items-center p-4 md:p-6 overflow-auto">
         <Confetti isActive={showConfetti} />
-        <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
+        <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row gap-6">
             <div className="flex-grow flex flex-col items-center">
                 <header className="w-full flex justify-between items-center mb-4">
                     <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
@@ -343,7 +343,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                 />
             </div>
 
-            <div className="w-full md:w-96 flex-shrink-0 glass-panel rounded-lg p-6 flex flex-col space-y-4">
+            <div className="w-full md:w-80 flex-shrink-0 glass-panel rounded-lg p-4 flex flex-col space-y-3 max-h-[75vh] overflow-hidden">
                 <Scoreboard me={me} opponent={opponent} gameMode={syncState.gameMode} />
                 
                 { syncState.gameStatus !== 'waiting' &&

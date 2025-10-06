@@ -60,7 +60,7 @@ const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers,
     // This component focuses on displaying the grid state.
     const winningCells = new Set<string>(); // Win state is handled by parent
 
-    const gridContainerClasses = `w-full max-w-2xl aspect-square grid grid-cols-5 grid-rows-5 bg-slate-900/50 dark:bg-slate-900/50 light:bg-white/50 rounded-xl p-2 md:p-4 shadow-2xl transition-all duration-300 ${isGridLocked && !calledNumbers.size ? 'ring-2 ring-cyan-400 shadow-lg shadow-cyan-500/20' : ''}`;
+    const gridContainerClasses = `w-full max-w-xl aspect-square grid grid-cols-5 grid-rows-5 bg-slate-900/50 dark:bg-slate-900/50 light:bg-white/50 rounded-xl p-2 md:p-3 shadow-2xl transition-all duration-300 overflow-auto ${isGridLocked && !calledNumbers.size ? 'ring-2 ring-cyan-400 shadow-lg shadow-cyan-500/20' : ''}`;
 
     return (
         <div className={gridContainerClasses}>
