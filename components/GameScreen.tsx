@@ -221,7 +221,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
   const isMyTurn = useMemo(() => {
     if (!syncState) return false;
-    return syncState.currentTurnId === playerId && syncState.gameStatus === 'playing';
+    return syncState.currentTurnId === playerId && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting');
   }, [syncState, playerId]);
 
   const calledNumbers = useMemo(() => {
@@ -372,11 +372,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
 
                     <div className="space-y-4 pt-2">
-                         <div className="text-center h-6">
+                        <div className="text-center h-6">
                             {isMyTurn ? (
                                 <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400 animate-pulse">Your Turn to Call!</p>
                             ) : (
-                                syncState.gameStatus === 'playing' && <p className="text-[var(--text-secondary)] italic">Waiting for {opponent?.name ?? 'opponent'}...</p>
+                                (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') && <p className="text-[var(--text-secondary)] italic">Waiting for {opponent?.name ?? 'opponent'}...</p>
                             )}
                         </div>
                         { syncState.gameStatus === 'waiting' && !me.isReady &&
@@ -384,7 +384,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                                 I'm Ready
                             </button>
                         }
-                        { me.isReady && syncState.gameStatus === 'playing' &&
+                        { me.isReady && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') &&
                         <>
                             <button onClick={callNextNumber} disabled={!isMyTurn} className="w-full text-lg font-semibold py-3 px-6 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                 Call Next Number
