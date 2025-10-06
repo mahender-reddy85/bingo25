@@ -130,7 +130,7 @@ const ChatBox: React.FC<{
     return (
         <div className="flex-grow flex flex-col bg-[var(--bg-secondary)] rounded-lg min-h-0">
             <p className="text-sm font-semibold text-[var(--text-secondary)] text-center p-2 border-b border-[var(--border-color)]">CHAT</p>
-            <div className="flex-grow p-3 space-y-3 overflow-y-auto h-48 md:h-auto max-h-72 md:max-h-96 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
+            <div className="flex-grow p-3 space-y-3 overflow-y-auto h-48 md:h-auto max-h-96 md:max-h-[32rem] scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
                 {chatHistory.map((chat, index) => (
                     <div key={index}>
                         {chat.isSystem ? (
@@ -232,14 +232,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   }, [syncState]);
 
 
-  const callNextNumber = useCallback(async () => {
-    if(swapSelection) setSwapSelection(null);
-    try {
-      await gameService.sendAction(gameCode, { type: 'CALL_NUMBER', payload: { playerId } });
-    } catch (error) {
-      console.error('Failed to call number:', error);
-    }
-  }, [gameCode, playerId, swapSelection]);
+
 
   const revealNumber = useCallback(async (number: number) => {
     if(swapSelection) setSwapSelection(null);
@@ -389,7 +382,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                     <div className="space-y-4 pt-2">
                         <div className="text-center h-6">
                             {isMyTurn ? (
-                                <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400 animate-pulse">Your Turn to Call!</p>
+                                <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400 animate-pulse">Choose a number to reveal!</p>
                             ) : (
                                 (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') && <p className="text-[var(--text-secondary)] italic">Waiting for {opponent?.name ?? 'opponent'}...</p>
                             )}
@@ -400,14 +393,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                             </button>
                         }
                         { me.isReady && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') &&
-                        <>
-                            <button onClick={callNextNumber} disabled={!isMyTurn} className="w-full text-lg font-semibold py-3 px-6 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                Call Next Number
-                            </button>
-                            <button onClick={checkBingo} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-green-500 to-teal-400 text-white rounded-lg transition-all hover:scale-105 btn-glow">
-                                BINGO!
-                            </button>
-                        </>
+                        <button onClick={checkBingo} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-green-500 to-teal-400 text-white rounded-lg transition-all hover:scale-105 btn-glow">
+                            BINGO!
+                        </button>
                         }
                     </div>
                 </div>
