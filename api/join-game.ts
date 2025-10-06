@@ -33,7 +33,13 @@ export default async function handler(req: any, res: any) {
       return res.status(404).json({ error: 'Game not found' });
     }
 
-    const game: SyncState = JSON.parse(gameData as string);
+    let game: SyncState;
+    try {
+      game = typeof gameData === 'string' ? JSON.parse(gameData) : gameData;
+    } catch (parseError) {
+      console.error('Failed to parse game data:', parseError);
+      return res.status(500).json({ error: 'Failed to parse game data' });
+    }
 
     // Check if player is rejoining
     const existingPlayerIndex = game.players.findIndex(p => p.id === player.id);
