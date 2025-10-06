@@ -95,11 +95,11 @@ interface RoundWonModalProps {
     isWinner: boolean;
 }
 export const BingoModal: React.FC<RoundWonModalProps> = ({ isOpen, onClose, onNextRound, achievedPatterns, isWinner }) => {
-    
+
     const handleNextRound = () => {
         onNextRound();
     }
-    
+
     const title = isWinner ? "Round Won!" : "Round Lost";
     const titleColor = isWinner ? "from-green-400 to-blue-500" : "from-red-500 to-orange-500";
     const headerText = isWinner ? "BINGO!" : "Opponent Won";
@@ -108,16 +108,28 @@ export const BingoModal: React.FC<RoundWonModalProps> = ({ isOpen, onClose, onNe
         <Modal isOpen={isOpen} onClose={onClose} title={title}>
              <div className="text-center space-y-6">
                 <h3 className={`text-4xl sm:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${titleColor} animate-pulse`}>{headerText}</h3>
-                <p className="text-[var(--text-secondary)]">The winning pattern(s) achieved:</p>
-                <div className="flex flex-wrap justify-center gap-2">
-                    {achievedPatterns.map(pattern => (
-                        <span key={pattern} className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm font-medium">{pattern}</span>
+                <div className="flex flex-wrap justify-center gap-3">
+                    {achievedPatterns.map((pattern, index) => (
+                        <div key={pattern} className="relative">
+                            <span className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                                {pattern}
+                            </span>
+                        </div>
                     ))}
                 </div>
                 <div className="flex justify-center pt-4">
                     <button onClick={handleNextRound} className="px-8 py-3 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-md hover:opacity-90 transition-opacity btn-glow">Next Round</button>
                 </div>
             </div>
+            <style>{`
+                @keyframes fade-in {
+                    from { opacity: 0; transform: translateY(10px) scale(0.9); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                .animate-fade-in {
+                    animation: fade-in 0.5s forwards ease-out;
+                }
+            `}</style>
         </Modal>
     )
 }
@@ -155,14 +167,15 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({ isOpen, onClose, o
                         </div>
                     </>
                 ) : (
-                     <>
-                         <p className="text-[var(--text-secondary)]">Winning pattern(s):</p>
-                         <div className="flex flex-wrap justify-center gap-2">
-                            {achievedPatterns.map(pattern => (
-                                <span key={pattern} className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm font-medium">{pattern}</span>
-                            ))}
-                        </div>
-                    </>
+                     <div className="flex flex-wrap justify-center gap-3">
+                        {achievedPatterns.map((pattern, index) => (
+                            <div key={pattern} className="relative">
+                                <span className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                                    {pattern}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 )}
                 
                 <div className="flex justify-center space-x-4 pt-4">
