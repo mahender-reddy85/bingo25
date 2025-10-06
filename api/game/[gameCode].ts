@@ -145,7 +145,7 @@ export default async function handler(req: any, res: any) {
       return res.status(404).json({ error: 'Game not found' });
     }
 
-    const game: SyncState = JSON.parse(gameData as string);
+    const game: SyncState = typeof gameData === "string" ? JSON.parse(gameData) : gameData;
 
     if (req.method === 'GET') {
       console.log('Returning game state for:', gameCode);
