@@ -39,7 +39,7 @@ const GridCell: React.FC<{
   } else if (!isGridLocked && isSwapSelected) {
     cellClasses = "bg-[var(--brand-from)] ring-4 ring-[var(--brand-to)] scale-105";
   } else if (isCalled) {
-      cellClasses = "bg-[var(--bg-panel)] text-[var(--text-secondary)]";
+      cellClasses = "bg-amber-500/20 border-2 border-amber-400 text-amber-900 dark:bg-amber-900/20 dark:border-amber-600 dark:text-amber-100 animate-pulse-once";
   } else if (!isGridLocked) {
     cellClasses = "bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-panel-solid)] hover:-translate-y-1";
   }
