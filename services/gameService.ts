@@ -85,9 +85,14 @@ class GameService {
     }
   }
 
-  leaveGame(gameCode: string, playerId: string) {
-    // For now, just stop polling. In a real implementation, you might notify the backend.
-    this.stopPolling(gameCode);
+  async leaveGame(gameCode: string, playerId: string) {
+    try {
+      await this.sendAction(gameCode, { type: 'LEAVE_GAME', payload: { playerId } });
+    } catch (error) {
+      console.error('Failed to leave game:', error);
+    } finally {
+      this.stopPolling(gameCode);
+    }
   }
 }
 

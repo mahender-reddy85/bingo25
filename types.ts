@@ -98,4 +98,5 @@ export type GameAction =
     | { type: 'REVEAL_NUMBER'; payload: { playerId: string, number: number } }
     | { type: 'DECLARE_BINGO'; payload: { playerId: string, grid: Grid } }
     | { type: 'NEXT_ROUND'; payload: { playerId: string } }
-    | { type: 'SEND_MESSAGE'; payload: { playerId: string, message: string } };
+    | { type: 'SEND_MESSAGE'; payload: { playerId: string, message: string } }
+    | { type: 'LEAVE_GAME'; payload: { playerId: string } };
