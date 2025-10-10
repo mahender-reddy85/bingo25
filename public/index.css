@@ -13,13 +13,13 @@
 }
 
 html.light {
-  --bg-primary: #f1f5f9;
+  --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
-  --bg-panel: rgba(255, 255, 255, 0.5);
+  --bg-panel: rgba(255, 255, 255, 0.9);
   --bg-panel-solid: #ffffff;
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --border-color: rgba(0, 0, 0, 0.1);
+  --text-secondary: #334155;
+  --border-color: rgba(0, 0, 0, 0.12);
   --brand-from: #8b5cf6; /* violet-500 */
   --brand-to: #d946ef; /* fuchsia-500 */
 }
@@ -102,6 +102,11 @@ button:active:not(:disabled) {
   border: 1px solid rgba(75, 85, 99, 0.3);
 }
 
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
 /* Custom scrollbar styles */
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
@@ -131,3 +136,24 @@ html, body {
 }
 
 /* Reduce default spacing */
+
+/* Ensure text visibility in light mode */
+html.light {
+  color-scheme: light;
+}
+
+html.light * {
+  color: var(--text-primary) !important;
+}
+
+html.light .text-[var(--text-secondary)] {
+  color: var(--text-secondary) !important;
+}
+
+/* High contrast for marked cells in light mode */
+html.light .marked-cell {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
+  color: white !important;
+  border-color: #1d4ed8 !important;
+  font-weight: 600;
+}
