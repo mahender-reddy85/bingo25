@@ -38,7 +38,7 @@ const Scoreboard: React.FC<{ me: Player; opponent?: Player; gameMode: GameMode }
     
     return (
         <div className="w-full bg-[var(--bg-secondary)] rounded-lg p-4 text-center">
-            <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">{modeText}</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)] mb-2">{modeText}</p>
             <div className="flex justify-around items-center">
                 <div className="text-center">
                     <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)]">{me.score}</p>
@@ -53,52 +53,13 @@ const Scoreboard: React.FC<{ me: Player; opponent?: Player; gameMode: GameMode }
                     </div>
                 </div>
             </div>
-            {gameMode !== GameMode.Normal && <p className="text-xs text-center mt-3 text-[var(--text-secondary)]">First to <span className="font-bold text-[var(--text-primary)]">{winsNeeded}</span> wins</p>}
+            {gameMode !== GameMode.Normal && <p className="text-xs text-center mt-3 text-[var(--text-primary)]">First to <span className="font-bold text-[var(--text-primary)]">{winsNeeded}</span> wins</p>}
         </div>
     )
 };
 
 
-const CalledNumbersDisplay: React.FC<{ numberSequence: number[]; calledNumberIndex: number; gameStatus: SyncState['gameStatus'] }> = ({ numberSequence, calledNumberIndex, gameStatus }) => {
-  const currentNumber = calledNumberIndex > -1 ? numberSequence[calledNumberIndex] : null;
-  const pastNumbers = calledNumberIndex > 0 ? numberSequence.slice(0, calledNumberIndex).reverse() : [];
-  const currentNumberRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (currentNumber && currentNumberRef.current) {
-      const el = currentNumberRef.current;
-      el.classList.remove('animate-called-number-pop');
-      void el.offsetWidth; // Trigger reflow
-      el.classList.add('animate-called-number-pop');
-    }
-  }, [currentNumber]);
-
-  return (
-    <div className="w-full bg-[var(--bg-secondary)] rounded-lg p-4 text-center">
-      <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">CALLED NUMBERS</p>
-      <div className="flex items-center justify-center h-32">
-        {currentNumber ? (
-          <div ref={currentNumberRef} className="w-28 h-28 rounded-full flex items-center justify-center text-5xl font-bold bg-gradient-to-br from-[var(--brand-from)] to-[var(--brand-to)] text-white shadow-lg shadow-purple-500/30">
-            {currentNumber}
-          </div>
-        ) : (
-          <div className="text-2xl text-[var(--text-secondary)]">
-            {gameStatus === 'waiting' ? "Waiting for opponent..." : "Game is starting..."}
-          </div>
-        )}
-      </div>
-      <div className="h-10 mt-2 overflow-hidden">
-        <div className="flex justify-center items-center gap-2 flex-wrap">
-          {pastNumbers.slice(0, 10).map((num, i) => (
-            <span key={num} className="text-sm text-[var(--text-secondary)]" style={{ opacity: 1 - i * 0.1 }}>
-              {num}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const ChatBox: React.FC<{
     chatHistory: ChatMessage[];
@@ -354,9 +315,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
             <div className="w-full md:w-80 flex-shrink-0 glass-panel rounded-lg p-4 flex flex-col space-y-3 max-h-[75vh] overflow-hidden">
                 {syncState.gameMode !== GameMode.Normal && <Scoreboard me={me} opponent={opponent} gameMode={syncState.gameMode} />}
 
-                { syncState.gameStatus !== 'waiting' &&
-                    <CalledNumbersDisplay numberSequence={syncState.numberSequence} calledNumberIndex={syncState.calledNumberIndex} gameStatus={syncState.gameStatus} />
-                }
+
                  
                 <div className="flex-grow flex flex-col space-y-4 min-h-0">
                      { syncState.gameStatus === 'waiting' ? (

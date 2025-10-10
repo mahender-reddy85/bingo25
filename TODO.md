@@ -1,21 +1,20 @@
-# Bingo25 Backend Integration TODO
+# TODO: GameScreen Updates
 
-## Completed
-- [x] Create Vercel API endpoints (create-game, join-game, game/[gameCode])
-- [x] Integrate Redis for persistent game state storage using @upstash/redis
-- [x] Update frontend to use new API-based gameService instead of mock service
-- [x] Implement polling for real-time updates
-- [x] Remove duplicate seeded random functions and create shared utils.ts
-- [x] Remove unused mockGameService.ts
+## Steps to Complete:
 
-## Remaining
-- [ ] Set up Upstash Redis instance and configure UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables in Vercel
-- [ ] Test multiplayer functionality with Redis backend
-- [ ] Deploy updated code to Vercel
-- [ ] Verify loading issue is resolved when playing with a friend
+1. **Remove CalledNumbersDisplay Component**
+   - Locate and delete the entire `CalledNumbersDisplay` component definition in `components/GameScreen.tsx`.
 
-## Fixed Issues
-- [x] Added proper Redis configuration checks to all API endpoints to return 500 error when environment variables are not set
-- [x] Added comprehensive error handling and logging to all API endpoints for better debugging
-- [x] Reverted all Tailwind CSS changes back to original CDN setup
-- [x] Moved Redis client initialization inside API handlers to prevent module-level errors when environment variables are missing
+2. **Remove CalledNumbersDisplay Rendering**
+   - In the JSX of `GameScreen`, remove the conditional rendering of `<CalledNumbersDisplay ... />`.
+
+3. **Update Scoreboard Text Colors**
+   - In the `Scoreboard` component, change the game mode text color from `text-[var(--text-secondary)]` to `text-[var(--text-primary)]`.
+   - Change the "First to X wins" text color from `text-[var(--text-secondary)]` to `text-[var(--text-primary)]`.
+
+## Progress:
+- [x] Step 1: Remove CalledNumbersDisplay Component
+- [x] Step 2: Remove CalledNumbersDisplay Rendering
+- [x] Step 3: Update Scoreboard Text Colors
+
+After completing all steps, verify the changes and update this file with completion status.
