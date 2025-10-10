@@ -41,14 +41,14 @@ const Scoreboard: React.FC<{ me: Player; opponent?: Player; gameMode: GameMode }
             <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">{modeText}</p>
             <div className="flex justify-around items-center">
                 <div className="text-center">
-                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">{me.score}</p>
+                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)]">{me.score}</p>
                     <p className="text-xs text-[var(--text-secondary)]">YOU</p>
                 </div>
                 <div className="text-4xl font-light text-[var(--text-secondary)]">/</div>
                 <div className={`text-center transition-opacity ${!opponent?.isConnected && opponent ? 'opacity-50' : ''}`}>
                     <p className="text-2xl font-bold text-[var(--text-primary)]">{opponent?.score ?? 0}</p>
                      <div className="flex items-center justify-center gap-2">
-                        {opponent && <span className={`h-2 w-2 rounded-full ${opponent.isConnected ? 'bg-green-500' : 'bg-slate-500'}`}></span>}
+                        {opponent && <span className={`h-2 w-2 rounded-full ${opponent.isConnected ? 'bg-[var(--brand-from)]' : 'bg-[var(--bg-secondary)]'}`}></span>}
                         <p className="text-xs text-[var(--text-secondary)]">{opponent?.name?.toUpperCase() ?? 'WAITING...'}</p>
                     </div>
                 </div>
@@ -78,7 +78,7 @@ const CalledNumbersDisplay: React.FC<{ numberSequence: number[]; calledNumberInd
       <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">CALLED NUMBERS</p>
       <div className="flex items-center justify-center h-32">
         {currentNumber ? (
-          <div ref={currentNumberRef} className="w-28 h-28 rounded-full flex items-center justify-center text-5xl font-bold bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/30">
+          <div ref={currentNumberRef} className="w-28 h-28 rounded-full flex items-center justify-center text-5xl font-bold bg-gradient-to-br from-[var(--brand-from)] to-[var(--brand-to)] text-white shadow-lg shadow-purple-500/30">
             {currentNumber}
           </div>
         ) : (
@@ -130,7 +130,7 @@ const ChatBox: React.FC<{
     return (
         <div className="flex-grow flex flex-col bg-[var(--bg-secondary)] rounded-lg min-h-0">
             <p className="text-sm font-semibold text-[var(--text-secondary)] text-center p-2 border-b border-[var(--border-color)]">CHAT</p>
-            <div className="flex-grow p-3 space-y-3 overflow-y-auto h-48 md:h-auto max-h-96 md:max-h-[32rem] scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
+            <div className="flex-grow p-3 space-y-3 overflow-y-auto h-48 md:h-auto max-h-96 md:max-h-[32rem] scrollbar-thin scrollbar-thumb-[var(--bg-panel-solid)] scrollbar-track-[var(--bg-primary)]">
                 {chatHistory.map((chat, index) => (
                     <div key={index}>
                         {chat.isSystem ? (
@@ -138,7 +138,7 @@ const ChatBox: React.FC<{
                         ) : (
                             <div className={`flex flex-col ${chat.senderId === playerId ? 'items-end' : 'items-start'}`}>
                                 <span className="text-xs text-[var(--text-secondary)] px-2">{chat.senderId === playerId ? 'You' : chat.senderName}</span>
-                                <p className={`max-w-[80%] text-sm p-2 rounded-lg break-words ${chat.senderId === playerId ? 'bg-purple-600 text-white' : 'bg-slate-700'}`}>
+                                <p className={`max-w-[80%] text-sm p-2 rounded-lg break-words ${chat.senderId === playerId ? 'bg-purple-600 text-white' : 'bg-[var(--bg-panel-solid)]'}`}>
                                     {chat.message}
                                 </p>
                             </div>
@@ -154,10 +154,10 @@ const ChatBox: React.FC<{
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type a message..."
-                    className="flex-grow bg-[var(--bg-primary)] p-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="flex-grow bg-[var(--bg-primary)] p-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-from)]"
                     maxLength={100}
                 />
-                <button onClick={handleSend} className="bg-purple-600 p-2 rounded-lg text-white hover:bg-purple-700 transition-colors disabled:opacity-50" disabled={!message.trim()}>
+                <button onClick={handleSend} className="bg-purple-600 p-2 rounded-lg text-white hover:bg-purple-700 transition-colors disabled:opacity-50" disabled={!message.trim()} title="Send Message">
                     <SendIcon />
                 </button>
             </div>
@@ -327,7 +327,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                             <span className="text-[var(--text-secondary)] text-xs font-semibold">GAME CODE</span>
                             <p className="text-lg font-bold text-[var(--text-secondary)] tracking-widest">{gameCode}</p>
                         </div>
-                        <button onClick={onReturnToLobby} className="p-2 bg-[var(--bg-secondary)] rounded-full hover:bg-purple-600 transition-colors duration-300">
+                        <button onClick={onReturnToLobby} className="p-2 bg-[var(--bg-secondary)] rounded-full hover:bg-[var(--brand-from)] transition-colors duration-300" title="Return to Lobby">
                             <HomeIcon />
                         </button>
                     </div>
@@ -338,7 +338,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                     </p>
                 )}
                  {me.isReady && syncState.gameStatus === 'waiting' && (
-                    <p className="text-cyan-400 mb-2 text-center text-sm font-semibold">
+                                <p className="text-[var(--brand-from)] mb-2 text-center text-sm font-semibold">
                         Grid locked! Waiting for {opponent ? opponent.name : 'opponent'} to get ready.
                     </p>
                 )}
@@ -368,7 +368,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                                 <p className="text-[var(--text-secondary)] text-sm mt-1">Customize your grid, then hit "I'm Ready" to begin.</p>
                               </>) :
                               (<>
-                                 <h3 className="font-bold text-lg text-cyan-400 animate-pulse">Waiting...</h3>
+                                 <h3 className="font-bold text-lg text-[var(--brand-from)] animate-pulse">Waiting...</h3>
                                  <p className="text-[var(--text-secondary)] text-sm mt-1">Waiting for another player to join the game.</p>
                                </>)
                             }
@@ -382,18 +382,18 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                     <div className="space-y-4 pt-2">
                         <div className="text-center h-6">
                             {isMyTurn ? (
-                                <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400 animate-pulse">Choose a number to reveal!</p>
+                                <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] animate-pulse">Choose a number to reveal!</p>
                             ) : (
                                 (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') && <p className="text-[var(--text-secondary)] italic">Waiting for {opponent?.name ?? 'opponent'}...</p>
                             )}
                         </div>
                         { syncState.gameStatus === 'waiting' && !me.isReady &&
-                            <button onClick={handleReadyClick} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg transition-all hover:scale-105 btn-glow">
+                            <button onClick={handleReadyClick} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg transition-all hover:scale-105 btn-glow">
                                 I'm Ready
                             </button>
                         }
                         { me.isReady && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') &&
-                        <button onClick={checkBingo} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-green-500 to-teal-400 text-white rounded-lg transition-all hover:scale-105 btn-glow">
+                        <button onClick={checkBingo} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg transition-all hover:scale-105 btn-glow">
                             BINGO!
                         </button>
                         }
