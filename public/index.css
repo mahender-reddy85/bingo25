@@ -13,15 +13,15 @@
 }
 
 html.light {
-  --bg-primary: #e2e8f0;
-  --bg-secondary: #f1f5f9;
-  --bg-panel: rgba(241, 245, 249, 0.8);
-  --bg-panel-solid: #f1f5f9;
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --bg-panel: rgba(255, 255, 255, 0.5);
+  --bg-panel-solid: #ffffff;
   --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --border-color: rgba(0, 0, 0, 0.2);
-  --brand-from: #3b82f6; /* blue-500 */
-  --brand-to: #06b6d4; /* cyan-500 */
+  --text-secondary: #475569;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --brand-from: #8b5cf6; /* violet-500 */
+  --brand-to: #d946ef; /* fuchsia-500 */
 }
 
 body {
@@ -128,12 +128,6 @@ html, body {
 
 .modal-open {
   overflow: hidden;
-}
-
-/* Improve marked cell visibility in light mode */
-html.light .marked-cell {
-  background: linear-gradient(to bottom right, #1e40af, #7c3aed) !important;
-  color: white !important;
 }
 
 /* Reduce default spacing */
