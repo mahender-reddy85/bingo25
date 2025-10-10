@@ -97,6 +97,7 @@ button:active:not(:disabled) {
 }
 
 .glass-panel {
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   background: rgba(31, 41, 55, 0.8);
   border: 1px solid rgba(75, 85, 99, 0.3);
@@ -140,14 +141,6 @@ html, body {
 /* Ensure text visibility in light mode */
 html.light {
   color-scheme: light;
-}
-
-html.light * {
-  color: var(--text-primary) !important;
-}
-
-html.light .text-[var(--text-secondary)] {
-  color: var(--text-secondary) !important;
 }
 
 /* High contrast for marked cells in light mode */
