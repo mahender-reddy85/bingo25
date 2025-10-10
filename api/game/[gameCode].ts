@@ -53,10 +53,14 @@ const handleRevealNumber = (state: SyncState, playerId: string, number: number):
     return state;
   }
 
-  // Find the index of the number in the sequence
-  const numberIndex = state.numberSequence.indexOf(number);
-  if (numberIndex === -1) {
+  // Only allow revealing the next number in sequence
+  const nextNumberIndex = state.calledNumberIndex + 1;
+  if (nextNumberIndex >= state.numberSequence.length) {
     return state;
+  }
+  const nextNumber = state.numberSequence[nextNumberIndex];
+  if (number !== nextNumber) {
+    return state; // Invalid: not the next number
   }
 
   const nextTurnPlayer = state.players.find(p => p.id !== playerId);
@@ -64,7 +68,7 @@ const handleRevealNumber = (state: SyncState, playerId: string, number: number):
   return {
     ...state,
     gameStatus: 'playing',
-    calledNumberIndex: numberIndex,
+    calledNumberIndex: nextNumberIndex,
     currentTurnId: nextTurnPlayer?.id,
   };
 };
