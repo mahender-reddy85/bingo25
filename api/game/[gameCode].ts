@@ -213,17 +213,6 @@ export default async function handler(req: any, res: any) {
         case 'SEND_MESSAGE':
           newState = handleSendMessage(newState, action.payload.playerId, action.payload.message);
           break;
-        case 'LEAVE_GAME':
-          const leavingPlayer = newState.players.find(p => p.id === action.payload.playerId);
-          if (leavingPlayer) {
-            leavingPlayer.isConnected = false;
-            newState.chatHistory.push({ senderId: 'system', senderName: 'System', message: `${leavingPlayer.name} left the game.`, isSystem: true });
-            if (newState.gameStatus === 'playing' || newState.gameStatus === 'starting') {
-              newState.gameStatus = 'gameOver';
-              newState.gameWinnerId = newState.players.find(p => p.id !== action.payload.playerId)?.id;
-            }
-          }
-          break;
         default:
           return res.status(400).json({ error: 'Unknown action type' });
       }
