@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid, WinState, WinPattern } from '../types.js';
 import { WIN_PATTERNS_CONFIG } from '../constants.js';
+import { WinPatternConfig } from '../types.js';
 
 interface BingoGridProps {
   grid: Grid;
@@ -34,7 +35,7 @@ const GridCell: React.FC<{
   if(isWinning) {
     cellClasses = "bg-green-500 text-white ring-2 ring-white animate-win";
   } else if (cell.marked) {
-    cellClasses = "bg-gradient-to-br from-[var(--brand-from)] to-[var(--brand-to)] text-white scale-105 shadow-md shadow-purple-500/30";
+    cellClasses = "marked-cell bg-gradient-to-br from-[var(--brand-from)] to-[var(--brand-to)] text-white scale-105 shadow-md shadow-purple-500/30";
   } else if (!isGridLocked && isSwapSelected) {
     cellClasses = "bg-[var(--brand-from)] ring-4 ring-[var(--brand-to)] scale-105";
   } else if (isCalled) {
@@ -58,7 +59,16 @@ const GridCell: React.FC<{
 const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers, swapSelection, isGridLocked }) => {
     // Note: Win animation is now handled at the GameScreen level via modals/confetti
     // This component focuses on displaying the grid state.
-    const winningCells = new Set<string>(); // Win state is handled by parent
+    const winningCells = new Set<string>();
+    // Calculate achieved patterns and highlight winning cells
+    Object.values(WIN_PATTERNS_CONFIG).forEach((pattern: WinPatternConfig) => {
+        if (pattern.check(grid)) {
+            const cells = pattern.getWinningCells(grid);
+            cells.forEach(({ r, c }) => {
+                winningCells.add(`${r}-${c}`);
+            });
+        }
+    });
 
     const gridContainerClasses = `w-full max-w-xl aspect-square grid grid-cols-5 grid-rows-5 bg-[var(--bg-panel)] rounded-xl p-2 md:p-3 shadow-2xl transition-all duration-300 overflow-auto ${isGridLocked && !calledNumbers.size ? 'ring-2 ring-[var(--brand-from)] shadow-lg shadow-[var(--brand-to)]/20' : ''}`;
 
