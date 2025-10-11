@@ -3,7 +3,7 @@ import { Grid, WinState, WinPattern, GameMode, SyncState, Player } from '../type
 import { WIN_PATTERNS_CONFIG } from '../constants.js';
 import BingoGrid from './BingoGrid';
 import { BingoModal, GameOverModal } from './Modals';
-import { HomeIcon, SendIcon } from './Icons';
+import { HomeIcon } from './Icons';
 import Confetti from './Confetti';
 import { gameService } from '../services/gameService';
 import { generateSeed, createSeededRandom, seededShuffle } from '../utils';
@@ -271,29 +271,34 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
                  
                 <div className="flex-grow flex flex-col space-y-4 min-h-0">
-                    <div className="flex-grow flex items-center justify-center p-4 bg-[var(--bg-secondary)] rounded-lg">
-                       <div className="text-center">
-                        { opponent ?
-                          (<>
-                            <h3 className="font-bold text-lg text-[var(--brand-from)]">Ready up!</h3>
-                            <p className="text-[var(--text-secondary)] text-sm mt-1">Customize your grid, then hit "I'm Ready" to begin.</p>
-                          </>) :
-                          (<>
-                             <h3 className="font-bold text-lg text-[var(--brand-from)] animate-pulse">Waiting...</h3>
-                             <p className="text-[var(--text-secondary)] text-sm mt-1">Waiting for another player to join the game.</p>
-                           </>)
-                        }
-                       </div>
-                    </div>
+                    { syncState.gameStatus === 'waiting' ? (
+                        <div className="flex-grow flex items-center justify-center p-4 bg-[var(--bg-secondary)] rounded-lg">
+                           <div className="text-center">
+                            { opponent ?
+                              (<>
+                                <h3 className="font-bold text-lg text-[var(--brand-from)]">Ready up!</h3>
+                                <p className="text-[var(--text-secondary)] text-sm mt-1">Customize your grid, then hit "I'm Ready" to begin.</p>
+                              </>) :
+                              (<>
+                                 <h3 className="font-bold text-lg text-[var(--brand-from)] animate-pulse">Waiting...</h3>
+                                 <p className="text-[var(--text-secondary)] text-sm mt-1">Waiting for another player to join the game.</p>
+                               </>)
+                            }
+                           </div>
+                        </div>
+                    ) : (
+                        <div className="flex-grow flex items-center justify-center p-4 bg-[var(--bg-secondary)] rounded-lg">
+                            <div className="text-center">
+                                {isMyTurn ? (
+                                    <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] animate-pulse">Select a number to call!</p>
+                                ) : (
+                                    (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') && <p className="text-[var(--text-secondary)] italic">Waiting for {opponent?.name ?? 'opponent'} to call...</p>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="space-y-4 pt-2">
-                        <div className="text-center h-6">
-                            {isMyTurn ? (
-                                <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] animate-pulse">Select a number to call!</p>
-                            ) : (
-                                (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') && <p className="text-[var(--text-secondary)] italic">Waiting for {opponent?.name ?? 'opponent'} to call...</p>
-                            )}
-                        </div>
                         { syncState.gameStatus === 'waiting' && !me.isReady &&
                             <button onClick={handleReadyClick} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg transition-all hover:scale-105 btn-glow">
                                 I'm Ready
