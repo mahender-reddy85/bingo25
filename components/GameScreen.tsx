@@ -137,7 +137,12 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
   const me = useMemo(() => syncState?.players.find(p => p.id === playerId), [syncState, playerId]);
   const opponent = useMemo(() => syncState?.players.find(p => p.id !== playerId), [syncState, playerId]);
-  
+
+  const calledNumbers = useMemo(() => {
+    if (!syncState) return new Set<number>();
+    return new Set(syncState.numberSequence.slice(0, syncState.calledNumberIndex + 1));
+  }, [syncState]);
+
   useEffect(() => {
     const handleUpdate = (newState: SyncState) => {
         setSyncState(newState);
@@ -164,6 +169,12 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
       setSelectedNumber(null);
     }
   }, [syncState?.currentTurnId, playerId]);
+
+  useEffect(() => {
+    if (selectedNumber && calledNumbers.has(selectedNumber)) {
+      setSelectedNumber(null);
+    }
+  }, [selectedNumber, calledNumbers]);
 
 
   // Effect for confetti
@@ -193,11 +204,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     if (!syncState) return false;
     return syncState.currentTurnId === playerId && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting');
   }, [syncState, playerId]);
-
-  const calledNumbers = useMemo(() => {
-    if (!syncState) return new Set<number>();
-    return new Set(syncState.numberSequence.slice(0, syncState.calledNumberIndex + 1));
-  }, [syncState]);
 
 
 
