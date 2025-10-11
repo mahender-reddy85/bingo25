@@ -7,7 +7,8 @@ const checkLocalWin = (grid: Grid): boolean => {
   const linePatterns = [WinPattern.ROW_0, WinPattern.ROW_1, WinPattern.ROW_2, WinPattern.ROW_3, WinPattern.ROW_4,
     WinPattern.COL_0, WinPattern.COL_1, WinPattern.COL_2, WinPattern.COL_3, WinPattern.COL_4,
     WinPattern.DIAG_1, WinPattern.DIAG_2];
-  return linePatterns.some(pattern => WIN_PATTERNS_CONFIG[pattern].check(grid));
+  const completedLines = linePatterns.filter(pattern => WIN_PATTERNS_CONFIG[pattern].check(grid));
+  return completedLines.length >= 5;
 };
 import { BingoModal, GameOverModal } from './Modals';
 import { HomeIcon } from './Icons';

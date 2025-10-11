@@ -109,7 +109,7 @@ const checkWin = (grid: Grid): { achieved: boolean; patterns: string[] } => {
       patterns.push(WIN_PATTERNS_CONFIG[key].name);
     }
   });
-  return { achieved: patterns.length > 0, patterns };
+  return { achieved: patterns.length >= 5, patterns };
 };
 
 export default async function handler(req: any, res: any) {
