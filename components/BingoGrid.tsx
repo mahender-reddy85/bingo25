@@ -7,6 +7,8 @@ interface BingoGridProps {
   grid: Grid;
   onCellClick: (r: number, c: number) => void;
   calledNumbers: Set<number>;
+  calledBy: Record<number, string>;
+  ownPlayerId: string;
   swapSelection: { r: number, c: number } | null;
   isGridLocked: boolean;
 }
@@ -20,7 +22,7 @@ const GridCell: React.FC<{
   isCalled: boolean;
   isSwapSelected: boolean;
   isGridLocked: boolean;
-}> = React.memo(({ cell, r, c, onCellClick, isWinning, isCalled, isSwapSelected, isGridLocked }) => {
+}> = React.memo(({ cell, r, c, onCellClick, isWinning, isCalled, calledBy, ownPlayerId, isSwapSelected, isGridLocked }) => {
     
   let baseClasses = "aspect-square w-full rounded-lg flex items-center justify-center text-2xl font-bold select-none transition-all duration-300 transform-gpu";
   
@@ -39,7 +41,12 @@ const GridCell: React.FC<{
   } else if (!isGridLocked && isSwapSelected) {
     cellClasses = "bg-[var(--brand-from)] ring-4 ring-[var(--brand-to)] scale-105";
   } else if (isCalled) {
-      cellClasses = "bg-amber-500/20 border-2 border-amber-400 text-amber-900 dark:bg-amber-900/20 dark:border-amber-600 dark:text-amber-100 animate-pulse-once";
+      const callerId = calledBy[cell.number];
+      if (callerId === ownPlayerId) {
+        cellClasses = "bg-blue-500/20 border-2 border-blue-400 text-blue-900 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-100 animate-pulse-once";
+      } else {
+        cellClasses = "bg-orange-500/20 border-2 border-orange-400 text-orange-900 dark:bg-orange-900/20 dark:border-orange-600 dark:text-orange-100 animate-pulse-once";
+      }
   } else if (!isGridLocked) {
     cellClasses = "bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-panel-solid)] hover:-translate-y-1";
   }
@@ -56,7 +63,7 @@ const GridCell: React.FC<{
   );
 });
 
-const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers, swapSelection, isGridLocked }) => {
+const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers, calledBy, ownPlayerId, swapSelection, isGridLocked }) => {
     // Note: Win animation is now handled at the GameScreen level via modals/confetti
     // This component focuses on displaying the grid state.
     const winningCells = new Set<string>();
@@ -84,6 +91,8 @@ const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers,
                     onCellClick={onCellClick}
                     isWinning={winningCells.has(`${r}-${c}`)}
                     isCalled={calledNumbers.has(cell.number)}
+                    calledBy={calledBy}
+                    ownPlayerId={ownPlayerId}
                     isSwapSelected={swapSelection !== null && swapSelection.r === r && swapSelection.c === c}
                     isGridLocked={isGridLocked}
                 />

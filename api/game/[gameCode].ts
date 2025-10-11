@@ -65,8 +65,11 @@ const handleRevealNumber = (state: SyncState, playerId: string, number: number):
 
   const nextTurnPlayer = state.players.find(p => p.id !== playerId);
 
+  const newCalledBy = { ...state.calledBy, [nextNumber]: playerId };
+
   return {
     ...state,
+    calledBy: newCalledBy,
     gameStatus: 'playing',
     calledNumberIndex: nextNumberIndex,
     currentTurnId: nextTurnPlayer?.id,

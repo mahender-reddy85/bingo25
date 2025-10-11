@@ -1,20 +1,30 @@
-# TODO: GameScreen Updates
+# TODO: Player-Specific Reveal Colors and Winning Highlights
 
-## Steps to Complete:
+## Task Description:
+After clicking "I'm Ready", players start clicking numbers. The color must be different for both players (for reveals), and if a complete row/column/diagonal completes, change the color so user can know (winning pattern highlight).
 
-1. **Remove CalledNumbersDisplay Component**
-   - Locate and delete the entire `CalledNumbersDisplay` component definition in `components/GameScreen.tsx`.
+## Steps Completed:
 
-2. **Remove CalledNumbersDisplay Rendering**
-   - In the JSX of `GameScreen`, remove the conditional rendering of `<CalledNumbersDisplay ... />`.
+1. **Add calledBy to SyncState**
+   - Added `calledBy: Record<number, string>` to types.js SyncState.
+   - Initialized `calledBy: {}` in create-game.ts and join-game.ts.
 
-3. **Update Scoreboard Text Colors**
-   - In the `Scoreboard` component, change the game mode text color from `text-[var(--text-secondary)]` to `text-[var(--text-primary)]`.
-   - Change the "First to X wins" text color from `text-[var(--text-secondary)]` to `text-[var(--text-primary)]`.
+2. **Update Backend for calledBy**
+   - In api/game/[gameCode].ts, handleRevealNumber: add `calledBy[nextNumber] = playerId`.
+   - In handleNextRound: reset `calledBy: {}`.
+
+3. **Update Frontend for calledBy**
+   - Pass `calledBy={syncState.calledBy}` and `ownPlayerId={playerId}` to BingoGrid in GameScreen.tsx.
+
+4. **Update BingoGrid for Player-Specific Colors**
+   - Added calledBy and ownPlayerId props to BingoGridProps and GridCell.
+   - In GridCell, for isCalled cells: if calledBy[number] === ownPlayerId, use blue background/border/text, else orange.
+   - Winning cells remain green.
 
 ## Progress:
-- [x] Step 1: Remove CalledNumbersDisplay Component
-- [x] Step 2: Remove CalledNumbersDisplay Rendering
-- [x] Step 3: Update Scoreboard Text Colors
+- [x] Add calledBy to SyncState
+- [x] Update Backend for calledBy
+- [x] Update Frontend for calledBy
+- [x] Update BingoGrid for Player-Specific Colors
 
-After completing all steps, verify the changes and update this file with completion status.
+All steps completed. The feature is ready for testing.

@@ -44,6 +44,7 @@ export default async function handler(req: any, res: any) {
       players: [hostWithStatus],
       numberSequence,
       calledNumberIndex: -1,
+      calledBy: {},
       gameStatus: 'waiting',
       round: 1,
       roundSeed: initialSeed,

@@ -41,6 +41,11 @@ export default async function handler(req: any, res: any) {
       return res.status(500).json({ error: 'Failed to parse game data' });
     }
 
+    // Ensure calledBy exists
+    if (!game.calledBy) {
+      game.calledBy = {};
+    }
+
     // Check if player is rejoining
     const existingPlayerIndex = game.players.findIndex(p => p.id === player.id);
     if (existingPlayerIndex !== -1) {

@@ -307,6 +307,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                     grid={playerGrid} 
                     onCellClick={handleCellClick} 
                     calledNumbers={calledNumbers}
+                    calledBy={syncState.calledBy}
+                    ownPlayerId={playerId}
                     swapSelection={swapSelection}
                     isGridLocked={isGridLocked}
                 />
