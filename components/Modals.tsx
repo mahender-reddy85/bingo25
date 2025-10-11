@@ -64,7 +64,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => (
     <div className="space-y-6 text-[var(--text-secondary)]">
       <div>
         <h3 className="font-bold text-lg text-[var(--brand-from)] mb-2">Objective</h3>
-        <p>Be the first player to complete a winning pattern and call BINGO! In "Best of" modes, be the first to win the required number of rounds.</p>
+        <p>Be the first player to complete 5 winning lines (rows, columns, or diagonals) and call BINGO! In "Best of" modes, be the first to win the required number of rounds.</p>
       </div>
       <div>
         <h3 className="font-bold text-lg text-[var(--brand-from)] mb-2">Game Setup</h3>
@@ -78,9 +78,10 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => (
       <div>
         <h3 className="font-bold text-lg text-[var(--brand-from)] mb-2">How to Play</h3>
         <ol className="list-decimal list-inside space-y-1 pl-2">
-          <li><strong>Calling Numbers:</strong> Players take turns clicking "Call Next Number". The number is the same for both players.</li>
-          <li><strong>Mark Your Grid:</strong> If the called number is on your grid, click it to mark it.</li>
-          <li><strong>Winning:</strong> When your marked numbers form a complete pattern, click the "BINGO!" button. The server will verify your win. In Normal mode, this wins the game. In "Best of" modes, this wins the current round.</li>
+          <li><strong>Revealing Numbers:</strong> On your turn, click any unmarked cell on your grid to reveal and call that number. It becomes called for both players.</li>
+          <li><strong>Auto-Marking:</strong> Called numbers are automatically marked on your grid if present.</li>
+          <li><strong>Highlighting:</strong> Completed lines (rows, columns, diagonals) highlight in green.</li>
+          <li><strong>Winning:</strong> When you have at least 5 completed lines, the BINGO button enables. Click it to declare and win the round/game. The server verifies your grid.</li>
         </ol>
       </div>
     </div>
