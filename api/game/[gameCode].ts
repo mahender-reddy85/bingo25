@@ -77,8 +77,7 @@ const handleRevealNumber = (state: SyncState, playerId: string, number: number):
     calledBy: newCalledBy,
     gameStatus: 'playing',
     calledNumberIndex: nextNumberIndex,
-    currentTurnId: null, // Delay turn change
-    pendingTurnChange: { to: nextTurnPlayer?.id, at: Date.now() + 2000 },
+    currentTurnId: nextTurnPlayer?.id,
   };
 };
 
@@ -192,15 +191,8 @@ export default async function handler(req: any, res: any) {
     const game: SyncState = typeof gameData === "string" ? JSON.parse(gameData) : gameData;
 
     if (req.method === 'GET') {
-      let stateToReturn = { ...game };
-      if (stateToReturn.pendingTurnChange && Date.now() > stateToReturn.pendingTurnChange.at) {
-        stateToReturn.currentTurnId = stateToReturn.pendingTurnChange.to;
-        stateToReturn.pendingTurnChange = undefined;
-        // Update the stored state
-        await redis.set(`game:${gameCode}`, JSON.stringify(stateToReturn));
-      }
       console.log('Returning game state for:', gameCode);
-      return res.status(200).json(stateToReturn);
+      return res.status(200).json(game);
     }
 
     if (req.method === 'POST') {

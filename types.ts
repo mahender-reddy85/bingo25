@@ -90,7 +90,6 @@ export interface SyncState {
     gameMode: GameMode;
     lastAchievedPatterns?: string[];
     chatHistory: ChatMessage[];
-    pendingTurnChange?: { to: string; at: number };
 }
 
 
