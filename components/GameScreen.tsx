@@ -298,14 +298,15 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                         Grid locked! Waiting for {opponent ? opponent.name : 'opponent'} to get ready.
                     </p>
                 )}
-                <BingoGrid 
-                    grid={playerGrid} 
-                    onCellClick={handleCellClick} 
+                <BingoGrid
+                    grid={playerGrid}
+                    onCellClick={handleCellClick}
                     calledNumbers={calledNumbers}
                     calledBy={syncState.calledBy}
                     ownPlayerId={playerId}
                     swapSelection={swapSelection}
                     isGridLocked={isGridLocked}
+                    isMyTurn={isMyTurn}
                 />
             </div>
 

@@ -11,6 +11,7 @@ interface BingoGridProps {
   ownPlayerId: string;
   swapSelection: { r: number, c: number } | null;
   isGridLocked: boolean;
+  isMyTurn: boolean;
 }
 
 const GridCell: React.FC<{
@@ -22,11 +23,12 @@ const GridCell: React.FC<{
   isCalled: boolean;
   isSwapSelected: boolean;
   isGridLocked: boolean;
-}> = React.memo(({ cell, r, c, onCellClick, isWinning, isCalled, calledBy, ownPlayerId, isSwapSelected, isGridLocked }) => {
-    
+  isMyTurn: boolean;
+}> = React.memo(({ cell, r, c, onCellClick, isWinning, isCalled, calledBy, ownPlayerId, isSwapSelected, isGridLocked, isMyTurn }) => {
+
   let baseClasses = "aspect-square w-full rounded-lg flex items-center justify-center text-2xl font-bold select-none transition-all duration-300 transform-gpu";
-  
-  if ((!isGridLocked) || (isGridLocked && isCalled)) {
+
+  if ((!isGridLocked) || (isGridLocked && (isCalled || (!isCalled && isMyTurn)))) {
     baseClasses += " cursor-pointer";
   } else {
     baseClasses += " cursor-default";
@@ -63,7 +65,7 @@ const GridCell: React.FC<{
   );
 });
 
-const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers, calledBy, ownPlayerId, swapSelection, isGridLocked }) => {
+const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers, calledBy, ownPlayerId, swapSelection, isGridLocked, isMyTurn }) => {
     // Note: Win animation is now handled at the GameScreen level via modals/confetti
     // This component focuses on displaying the grid state.
     const winningCells = new Set<string>();
@@ -95,6 +97,7 @@ const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers,
                     ownPlayerId={ownPlayerId}
                     isSwapSelected={swapSelection !== null && swapSelection.r === r && swapSelection.c === c}
                     isGridLocked={isGridLocked}
+                    isMyTurn={isMyTurn}
                 />
             ))
         )}
