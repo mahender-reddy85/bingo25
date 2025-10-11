@@ -73,14 +73,17 @@ const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers,
     // Note: Win animation is now handled at the GameScreen level via modals/confetti
     // This component focuses on displaying the grid state.
     const winningCells = new Set<string>();
-    // Calculate achieved patterns and highlight winning cells
-    Object.values(WIN_PATTERNS_CONFIG).forEach((pattern: WinPatternConfig) => {
-        if (pattern.check(grid)) {
-            const cells = pattern.getWinningCells(grid);
-            cells.forEach(({ r, c }) => {
-                winningCells.add(`${r}-${c}`);
-            });
-        }
+    // Calculate achieved patterns and highlight winning cells (only lines: rows, columns, diagonals)
+    const linePatterns = [WinPattern.ROW_0, WinPattern.ROW_1, WinPattern.ROW_2, WinPattern.ROW_3, WinPattern.ROW_4,
+      WinPattern.COL_0, WinPattern.COL_1, WinPattern.COL_2, WinPattern.COL_3, WinPattern.COL_4,
+      WinPattern.DIAG_1, WinPattern.DIAG_2];
+    linePatterns.forEach((pattern) => {
+      if (WIN_PATTERNS_CONFIG[pattern].check(grid)) {
+        const cells = WIN_PATTERNS_CONFIG[pattern].getWinningCells(grid);
+        cells.forEach(({ r, c }) => {
+          winningCells.add(`${r}-${c}`);
+        });
+      }
     });
 
     const gridContainerClasses = `w-full max-w-xl aspect-square grid grid-cols-5 grid-rows-5 bg-[var(--bg-panel)] rounded-xl p-2 md:p-3 shadow-2xl transition-all duration-300 overflow-auto ${isGridLocked && !calledNumbers.size ? 'ring-2 ring-[var(--brand-from)] shadow-lg shadow-[var(--brand-to)]/20' : ''}`;

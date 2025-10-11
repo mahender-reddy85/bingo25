@@ -115,6 +115,21 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     }
   }, [syncState?.currentTurnId]);
 
+  // Auto-mark cells when numbers are called
+  useEffect(() => {
+    if (syncState && calledNumbers.size > 0) {
+      const newGrid = playerGrid.map(row =>
+        row.map(cell => {
+          if (calledNumbers.has(cell.number) && !cell.marked) {
+            return { ...cell, marked: true };
+          }
+          return cell;
+        })
+      );
+      setPlayerGrid(newGrid);
+    }
+  }, [syncState?.calledNumbers, calledNumbers]);
+
 
 
 
