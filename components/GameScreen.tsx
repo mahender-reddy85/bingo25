@@ -131,6 +131,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   const [syncState, setSyncState] = useState<SyncState | null>(null);
   const [playerGrid, setPlayerGrid] = useState<Grid>(() => generateGrid(0, playerId));
   const [swapSelection, setSwapSelection] = useState<{ r: number; c: number } | null>(null);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const prevStateRef = useRef<SyncState | null>(syncState);
 
@@ -157,6 +158,12 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
         }
     }
   }, [syncState?.roundSeed, playerId]);
+
+  useEffect(() => {
+    if (syncState?.currentTurnId !== playerId) {
+      setSelectedNumber(null);
+    }
+  }, [syncState?.currentTurnId, playerId]);
 
 
   // Effect for confetti
@@ -208,6 +215,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
             newGrid[r][c].marked = !newGrid[r][c].marked;
             setPlayerGrid(newGrid);
         } else if (isMyTurn && !calledNumbers.has(cellNumber)) {
+            // Local feedback for click
+            setSelectedNumber(cellNumber);
             // Reveal the number if it's the player's turn and the number hasn't been called
             gameService.sendAction(gameCode, { type: 'REVEAL_NUMBER', payload: { playerId, number: cellNumber } }).catch(error => {
               console.error('Failed to reveal number:', error);
@@ -307,6 +316,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                     swapSelection={swapSelection}
                     isGridLocked={isGridLocked}
                     isMyTurn={isMyTurn}
+                    selectedNumber={selectedNumber}
                 />
             </div>
 
