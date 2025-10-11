@@ -1,12 +1,6 @@
 import { GameMode, Player, SyncState } from '../types.js';
 import { Redis } from '@upstash/redis';
-import { generateSeed, seededShuffle, createSeededRandom } from '../utils.js';
-
-const generateNumberSequence = (gameCode: string) => {
-  const seed = generateSeed(gameCode, 0);
-  const numbers = Array.from({ length: 25 }, (_, i) => i + 1);
-  return seededShuffle(numbers, seed);
-};
+import { generateSeed } from '../utils.js';
 
 export default async function handler(req: any, res: any) {
   try {
@@ -36,14 +30,12 @@ export default async function handler(req: any, res: any) {
     console.log('Creating game with code:', gameCode, 'mode:', gameMode, 'player:', player);
 
     const initialSeed = generateSeed(gameCode);
-    const numberSequence = generateNumberSequence(gameCode);
     const hostWithStatus = { ...player, isConnected: true };
 
     const newState: SyncState = {
       gameCode,
       players: [hostWithStatus],
-      numberSequence,
-      calledNumberIndex: -1,
+      calledNumbers: [],
       calledBy: {},
       gameStatus: 'waiting',
       round: 1,

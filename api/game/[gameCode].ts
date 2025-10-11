@@ -15,33 +15,7 @@ const handlePlayerReady = (state: SyncState, playerId: string): SyncState => {
   };
 };
 
-const handleCallNumber = (state: SyncState, playerId: string): SyncState => {
-  if (state.gameStatus === 'playing' && state.currentTurnId !== playerId) {
-    return state;
-  }
 
-  if (state.gameStatus !== 'playing' && state.gameStatus !== 'starting') {
-    return state;
-  }
-
-  if (state.calledNumberIndex >= state.numberSequence.length - 1) {
-    return state;
-  }
-
-  const nextIndex = state.calledNumberIndex + 1;
-  const calledNumber = state.numberSequence[nextIndex];
-  const newCalledBy = { ...state.calledBy, [calledNumber]: playerId };
-
-  const nextTurnPlayer = state.players.find(p => p.id !== playerId);
-
-  return {
-    ...state,
-    calledBy: newCalledBy,
-    gameStatus: 'playing',
-    calledNumberIndex: nextIndex,
-    currentTurnId: nextTurnPlayer?.id,
-  };
-};
 
 const handleRevealNumber = (state: SyncState, playerId: string, number: number): SyncState => {
   if (state.gameStatus === 'playing' && state.currentTurnId !== playerId) {
@@ -52,31 +26,18 @@ const handleRevealNumber = (state: SyncState, playerId: string, number: number):
     return state;
   }
 
-  // Check if the number is already revealed
-  const alreadyRevealed = state.calledNumberIndex >= 0 && state.numberSequence.slice(0, state.calledNumberIndex + 1).includes(number);
-  if (alreadyRevealed) {
+  // Check if the number is already called
+  if (state.calledNumbers.includes(number)) {
     return state;
-  }
-
-  // Only allow revealing the next number in sequence
-  const nextNumberIndex = state.calledNumberIndex + 1;
-  if (nextNumberIndex >= state.numberSequence.length) {
-    return state;
-  }
-  const nextNumber = state.numberSequence[nextNumberIndex];
-  if (number !== nextNumber) {
-    return state; // Invalid: not the next number
   }
 
   const nextTurnPlayer = state.players.find(p => p.id !== playerId);
 
-  const newCalledBy = { ...state.calledBy, [nextNumber]: playerId };
-
   return {
     ...state,
-    calledBy: newCalledBy,
+    calledNumbers: [...state.calledNumbers, number],
+    calledBy: { ...state.calledBy, [number]: playerId },
     gameStatus: 'playing',
-    calledNumberIndex: nextNumberIndex,
     currentTurnId: nextTurnPlayer?.id,
   };
 };
@@ -125,7 +86,8 @@ const handleNextRound = (state: SyncState, playerId: string): SyncState => {
   return {
     ...state,
     players,
-    calledNumberIndex: -1,
+    calledNumbers: [],
+    calledBy: {},
     gameStatus: 'waiting',
     round: newRound,
     roundSeed: generateSeed(state.gameCode, newRound),
@@ -193,9 +155,6 @@ export default async function handler(req: any, res: any) {
       switch (action.type) {
         case 'PLAYER_READY':
           newState = handlePlayerReady(newState, action.payload.playerId);
-          break;
-        case 'CALL_NUMBER':
-          newState = handleCallNumber(newState, action.payload.playerId);
           break;
         case 'REVEAL_NUMBER':
           newState = handleRevealNumber(newState, action.payload.playerId, action.payload.number);

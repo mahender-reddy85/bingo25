@@ -73,8 +73,7 @@ export interface Player {
 export interface SyncState {
     gameCode: string;
     players: Player[];
-    numberSequence: number[];
-    calledNumberIndex: number;
+    calledNumbers: number[];
     calledBy: Record<number, string>;
     gameStatus: 'waiting' | 'starting' | 'playing' | 'roundOver' | 'gameOver';
     round: number;

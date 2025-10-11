@@ -41,9 +41,12 @@ export default async function handler(req: any, res: any) {
       return res.status(500).json({ error: 'Failed to parse game data' });
     }
 
-    // Ensure calledBy exists
+    // Ensure calledBy and calledNumbers exist
     if (!game.calledBy) {
       game.calledBy = {};
+    }
+    if (!game.calledNumbers) {
+      game.calledNumbers = [];
     }
 
     // Check if player is rejoining
