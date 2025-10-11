@@ -133,6 +133,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   const [swapSelection, setSwapSelection] = useState<{ r: number; c: number } | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [localTurnId, setLocalTurnId] = useState<string | undefined>(undefined);
   const prevStateRef = useRef<SyncState | null>(syncState);
 
   const me = useMemo(() => syncState?.players.find(p => p.id === playerId), [syncState, playerId]);
@@ -165,10 +166,16 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   }, [syncState?.roundSeed, playerId]);
 
   useEffect(() => {
-    if (syncState?.currentTurnId !== playerId) {
+    if (syncState) {
+      setLocalTurnId(syncState.currentTurnId);
+    }
+  }, [syncState?.currentTurnId]);
+
+  useEffect(() => {
+    if (localTurnId !== playerId) {
       setSelectedNumber(null);
     }
-  }, [syncState?.currentTurnId, playerId]);
+  }, [localTurnId, playerId]);
 
   useEffect(() => {
     if (selectedNumber && calledNumbers.has(selectedNumber)) {
@@ -202,8 +209,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
   const isMyTurn = useMemo(() => {
     if (!syncState) return false;
-    return syncState.currentTurnId === playerId && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting');
-  }, [syncState, playerId]);
+    return localTurnId === playerId && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting');
+  }, [syncState, localTurnId, playerId]);
 
 
 
@@ -223,6 +230,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
         } else if (isMyTurn && !calledNumbers.has(cellNumber)) {
             // Local feedback for click
             setSelectedNumber(cellNumber);
+            setLocalTurnId(opponent?.id);
             // Reveal the number if it's the player's turn and the number hasn't been called
             gameService.sendAction(gameCode, { type: 'REVEAL_NUMBER', payload: { playerId, number: cellNumber } }).catch(error => {
               console.error('Failed to reveal number:', error);
