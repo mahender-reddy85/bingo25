@@ -52,7 +52,6 @@ export default async function handler(req: any, res: any) {
       // Reconnecting
       const newState = { ...game };
       newState.players[existingPlayerIndex].isConnected = true;
-      newState.chatHistory.push({ senderId: 'system', senderName: 'System', message: `${player.name} has reconnected.`, isSystem: true });
       await redis.set(`game:${gameCode}`, JSON.stringify(newState));
       console.log('Player reconnected:', player.id);
       return res.status(200).json(newState);
@@ -64,7 +63,6 @@ export default async function handler(req: any, res: any) {
 
     const playerWithStatus = { ...player, isConnected: true };
     const newState = { ...game, players: [...game.players, playerWithStatus] };
-    newState.chatHistory.push({ senderId: 'system', senderName: 'System', message: `${player.name} has joined.`, isSystem: true });
     await redis.set(`game:${gameCode}`, JSON.stringify(newState));
 
     console.log('Player joined:', player.id);

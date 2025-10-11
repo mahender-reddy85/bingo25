@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Grid, WinState, WinPattern, GameMode, SyncState, Player, ChatMessage } from '../types.js';
+import { Grid, WinState, WinPattern, GameMode, SyncState, Player } from '../types.js';
 import { WIN_PATTERNS_CONFIG } from '../constants.js';
 import BingoGrid from './BingoGrid';
 import { BingoModal, GameOverModal } from './Modals';
@@ -61,70 +61,7 @@ const Scoreboard: React.FC<{ me: Player; opponent?: Player; gameMode: GameMode }
 
 
 
-const ChatBox: React.FC<{
-    chatHistory: ChatMessage[];
-    playerId: string;
-    onSendMessage: (message: string) => void;
-}> = ({ chatHistory, playerId, onSendMessage }) => {
-    const [message, setMessage] = useState('');
-    const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    useEffect(scrollToBottom, [chatHistory]);
-
-    const handleSend = () => {
-        if (message.trim()) {
-            onSendMessage(message.trim());
-            setMessage('');
-        }
-    };
-
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleSend();
-        }
-    };
-
-    return (
-        <div className="flex-grow flex flex-col bg-[var(--bg-secondary)] rounded-lg min-h-0">
-            <p className="text-sm font-semibold text-[var(--text-secondary)] text-center p-2 border-b border-[var(--border-color)]">CHAT</p>
-            <div className="flex-grow p-3 space-y-3 overflow-y-auto h-48 md:h-auto max-h-96 md:max-h-[32rem] scrollbar-thin scrollbar-thumb-[var(--bg-panel-solid)] scrollbar-track-[var(--bg-primary)]">
-                {chatHistory.map((chat, index) => (
-                    <div key={index}>
-                        {chat.isSystem ? (
-                            <p className="text-xs text-center text-[var(--text-secondary)] italic">{chat.message}</p>
-                        ) : (
-                            <div className={`flex flex-col ${chat.senderId === playerId ? 'items-end' : 'items-start'}`}>
-                                <span className="text-xs text-[var(--text-secondary)] px-2">{chat.senderId === playerId ? 'You' : chat.senderName}</span>
-                                <p className={`max-w-[80%] text-sm p-2 rounded-lg break-words ${chat.senderId === playerId ? 'bg-purple-600 text-white' : 'bg-[var(--bg-panel-solid)]'}`}>
-                                    {chat.message}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                ))}
-                <div ref={messagesEndRef} />
-            </div>
-            <div className="p-2 border-t border-[var(--border-color)] flex gap-2">
-                <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Type a message..."
-                    className="flex-grow bg-[var(--bg-primary)] p-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-from)]"
-                    maxLength={100}
-                />
-                <button onClick={handleSend} className="bg-purple-600 p-2 rounded-lg text-white hover:bg-purple-700 transition-colors disabled:opacity-50" disabled={!message.trim()} title="Send Message">
-                    <SendIcon />
-                </button>
-            </div>
-        </div>
-    );
-};
 
 
 const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, playerName, playerId }) => {
@@ -280,13 +217,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
       }
   };
 
-  const handleSendMessage = async (message: string) => {
-    try {
-      await gameService.sendAction(gameCode, { type: 'SEND_MESSAGE', payload: { playerId, message } });
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    }
-  };
+
 
   if (!syncState || !me) {
     return <div className="min-h-screen w-full flex items-center justify-center">Loading game...</div>
@@ -340,25 +271,20 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
                  
                 <div className="flex-grow flex flex-col space-y-4 min-h-0">
-                     { syncState.gameStatus === 'waiting' ? (
-                        <div className="flex-grow flex items-center justify-center p-4 bg-[var(--bg-secondary)] rounded-lg">
-                           <div className="text-center">
-                            { opponent ? 
-                              (<>
-                                <h3 className="font-bold text-lg text-[var(--brand-from)]">Ready up!</h3>
-                                <p className="text-[var(--text-secondary)] text-sm mt-1">Customize your grid, then hit "I'm Ready" to begin.</p>
-                              </>) :
-                              (<>
-                                 <h3 className="font-bold text-lg text-[var(--brand-from)] animate-pulse">Waiting...</h3>
-                                 <p className="text-[var(--text-secondary)] text-sm mt-1">Waiting for another player to join the game.</p>
-                               </>)
-                            }
-                           </div>
-                        </div>
-                     ) : (
-                        <ChatBox chatHistory={syncState.chatHistory} playerId={playerId} onSendMessage={handleSendMessage} />
-                     )}
-
+                    <div className="flex-grow flex items-center justify-center p-4 bg-[var(--bg-secondary)] rounded-lg">
+                       <div className="text-center">
+                        { opponent ?
+                          (<>
+                            <h3 className="font-bold text-lg text-[var(--brand-from)]">Ready up!</h3>
+                            <p className="text-[var(--text-secondary)] text-sm mt-1">Customize your grid, then hit "I'm Ready" to begin.</p>
+                          </>) :
+                          (<>
+                             <h3 className="font-bold text-lg text-[var(--brand-from)] animate-pulse">Waiting...</h3>
+                             <p className="text-[var(--text-secondary)] text-sm mt-1">Waiting for another player to join the game.</p>
+                           </>)
+                        }
+                       </div>
+                    </div>
 
                     <div className="space-y-4 pt-2">
                         <div className="text-center h-6">

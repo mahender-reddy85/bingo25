@@ -50,7 +50,6 @@ export default async function handler(req: any, res: any) {
       roundSeed: initialSeed,
       currentTurnId: player.id,
       gameMode,
-      chatHistory: [{ senderId: 'system', senderName: 'System', message: `${player.name} created the game.`, isSystem: true }],
     };
 
     console.log('Saving game state to Redis:', `game:${gameCode}`);

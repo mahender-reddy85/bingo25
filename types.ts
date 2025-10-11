@@ -68,12 +68,7 @@ export interface Player {
     isConnected: boolean;
 }
 
-export interface ChatMessage {
-    senderId: string;
-    senderName: string;
-    message: string;
-    isSystem?: boolean;
-}
+
 
 export interface SyncState {
     gameCode: string;
@@ -89,7 +84,6 @@ export interface SyncState {
     currentTurnId?: string;
     gameMode: GameMode;
     lastAchievedPatterns?: string[];
-    chatHistory: ChatMessage[];
 }
 
 

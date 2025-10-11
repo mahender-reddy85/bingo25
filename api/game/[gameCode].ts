@@ -135,23 +135,7 @@ const handleNextRound = (state: SyncState, playerId: string): SyncState => {
   };
 };
 
-const handleSendMessage = (state: SyncState, playerId: string, message: string): SyncState => {
-  const sender = state.players.find(p => p.id === playerId);
-  if (!sender || !message.trim()) {
-    return state;
-  }
 
-  const newMessage = {
-    senderId: playerId,
-    senderName: sender.name,
-    message: message.trim(),
-  };
-
-  return {
-    ...state,
-    chatHistory: [...state.chatHistory, newMessage]
-  };
-};
 
 const checkWin = (grid: Grid): { achieved: boolean; patterns: string[] } => {
   const patterns: string[] = [];
@@ -222,9 +206,7 @@ export default async function handler(req: any, res: any) {
         case 'NEXT_ROUND':
           newState = handleNextRound(newState, action.payload.playerId);
           break;
-        case 'SEND_MESSAGE':
-          newState = handleSendMessage(newState, action.payload.playerId, action.payload.message);
-          break;
+
         default:
           return res.status(400).json({ error: 'Unknown action type' });
       }
