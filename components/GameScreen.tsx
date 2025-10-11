@@ -195,14 +195,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
 
 
-  const revealNumber = useCallback(async (number: number) => {
-    if(swapSelection) setSwapSelection(null);
-    try {
-      await gameService.sendAction(gameCode, { type: 'REVEAL_NUMBER', payload: { playerId, number } });
-    } catch (error) {
-      console.error('Failed to reveal number:', error);
-    }
-  }, [gameCode, playerId, swapSelection]);
+
 
   const handleCellClick = (r: number, c: number) => {
     if (syncState?.gameStatus === 'roundOver' || syncState?.gameStatus === 'gameOver') return;
@@ -210,13 +203,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     if (isGridLocked) {
         const cellNumber = playerGrid[r][c].number;
         if (calledNumbers.has(cellNumber)) {
-            // Mark/unmark the cell if the number has been revealed
+            // Mark/unmark the cell if the number has been called
             const newGrid = playerGrid.map(row => row.map(cell => ({...cell})));
             newGrid[r][c].marked = !newGrid[r][c].marked;
             setPlayerGrid(newGrid);
-        } else if (isMyTurn && !playerGrid[r][c].marked) {
-            // Reveal the number if it's the player's turn and the cell isn't already marked
-            revealNumber(cellNumber);
         }
         return;
     }
@@ -267,6 +257,14 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
       await gameService.sendAction(gameCode, { type: 'SEND_MESSAGE', payload: { playerId, message } });
     } catch (error) {
       console.error('Failed to send message:', error);
+    }
+  };
+
+  const handleCallNext = async () => {
+    try {
+      await gameService.sendAction(gameCode, { type: 'CALL_NUMBER', payload: { playerId } });
+    } catch (error) {
+      console.error('Failed to call number:', error);
     }
   };
 
@@ -343,14 +341,19 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                     <div className="space-y-4 pt-2">
                         <div className="text-center h-6">
                             {isMyTurn ? (
-                                <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] animate-pulse">Choose a number to reveal!</p>
+                                <p className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] animate-pulse">Call the next number!</p>
                             ) : (
-                                (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') && <p className="text-[var(--text-secondary)] italic">Waiting for {opponent?.name ?? 'opponent'}...</p>
+                                (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') && <p className="text-[var(--text-secondary)] italic">Waiting for {opponent?.name ?? 'opponent'} to call...</p>
                             )}
                         </div>
                         { syncState.gameStatus === 'waiting' && !me.isReady &&
                             <button onClick={handleReadyClick} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg transition-all hover:scale-105 btn-glow">
                                 I'm Ready
+                            </button>
+                        }
+                        { isMyTurn &&
+                            <button onClick={handleCallNext} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg transition-all hover:scale-105 btn-glow">
+                                Call Next Number
                             </button>
                         }
                         { me.isReady && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') &&

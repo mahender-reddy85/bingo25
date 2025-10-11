@@ -28,12 +28,17 @@ const handleCallNumber = (state: SyncState, playerId: string): SyncState => {
     return state;
   }
 
+  const nextIndex = state.calledNumberIndex + 1;
+  const calledNumber = state.numberSequence[nextIndex];
+  const newCalledBy = { ...state.calledBy, [calledNumber]: playerId };
+
   const nextTurnPlayer = state.players.find(p => p.id !== playerId);
 
   return {
     ...state,
+    calledBy: newCalledBy,
     gameStatus: 'playing',
-    calledNumberIndex: state.calledNumberIndex + 1,
+    calledNumberIndex: nextIndex,
     currentTurnId: nextTurnPlayer?.id,
   };
 };
