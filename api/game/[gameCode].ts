@@ -101,7 +101,10 @@ const handleNextRound = (state: SyncState, playerId: string): SyncState => {
 
 const checkWin = (grid: Grid): { achieved: boolean; patterns: string[] } => {
   const patterns: string[] = [];
-  (Object.keys(WIN_PATTERNS_CONFIG) as WinPattern[]).forEach(key => {
+  const linePatterns = [WinPattern.ROW_0, WinPattern.ROW_1, WinPattern.ROW_2, WinPattern.ROW_3, WinPattern.ROW_4,
+    WinPattern.COL_0, WinPattern.COL_1, WinPattern.COL_2, WinPattern.COL_3, WinPattern.COL_4,
+    WinPattern.DIAG_1, WinPattern.DIAG_2];
+  linePatterns.forEach(key => {
     if (WIN_PATTERNS_CONFIG[key].check(grid)) {
       patterns.push(WIN_PATTERNS_CONFIG[key].name);
     }

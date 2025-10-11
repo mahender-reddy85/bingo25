@@ -2,6 +2,13 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { Grid, WinState, WinPattern, GameMode, SyncState, Player } from '../types.js';
 import { WIN_PATTERNS_CONFIG } from '../constants.js';
 import BingoGrid from './BingoGrid';
+
+const checkLocalWin = (grid: Grid): boolean => {
+  const linePatterns = [WinPattern.ROW_0, WinPattern.ROW_1, WinPattern.ROW_2, WinPattern.ROW_3, WinPattern.ROW_4,
+    WinPattern.COL_0, WinPattern.COL_1, WinPattern.COL_2, WinPattern.COL_3, WinPattern.COL_4,
+    WinPattern.DIAG_1, WinPattern.DIAG_2];
+  return linePatterns.some(pattern => WIN_PATTERNS_CONFIG[pattern].check(grid));
+};
 import { BingoModal, GameOverModal } from './Modals';
 import { HomeIcon } from './Icons';
 import Confetti from './Confetti';
@@ -138,6 +145,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     if (!syncState) return false;
     return localTurnId === playerId && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting');
   }, [syncState, localTurnId, playerId]);
+
+  const canDeclareBingo = useMemo(() => checkLocalWin(playerGrid), [playerGrid]);
 
 
 
@@ -291,7 +300,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                             </button>
                         }
                         { me.isReady && (syncState.gameStatus === 'playing' || syncState.gameStatus === 'starting') &&
-                        <button onClick={checkBingo} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg transition-all hover:scale-105 btn-glow">
+                        <button onClick={checkBingo} disabled={!canDeclareBingo} className={`w-full text-lg font-semibold py-3 px-6 rounded-lg transition-all ${canDeclareBingo ? 'bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white hover:scale-105 btn-glow' : 'bg-gray-400 text-gray-200 cursor-not-allowed'}`}>
                             BINGO!
                         </button>
                         }
