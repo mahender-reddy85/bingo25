@@ -7,11 +7,12 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const modalRoot = document.getElementById('modal-root');
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 'sm' }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('modal-open');
@@ -29,9 +30,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
       onClose();
   }
   
+  const sizeClasses = size === 'lg' 
+    ? 'max-w-sm md:max-w-2xl' 
+    : size === 'md' 
+      ? 'max-w-sm md:max-w-md' 
+      : 'max-w-sm';
+
   const modalContent = (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={onClose ? handleClose : undefined}>
-      <div className="bg-[var(--bg-panel-solid)] rounded-xl shadow-2xl w-full max-w-sm text-white border border-[var(--border-color)] transform transition-all duration-300 scale-95 opacity-0 animate-fade-in-up max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
+      <div className={`bg-[var(--bg-panel-solid)] rounded-xl shadow-2xl w-full ${sizeClasses} text-white border border-[var(--border-color)] transform transition-all duration-300 scale-95 opacity-0 animate-fade-in-up max-h-[85vh] overflow-auto`} onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b border-[var(--border-color)]">
           <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)]">{title}</h2>
           {onClose && <button onClick={handleClose} className="text-slate-400 hover:text-white">&times;</button>}
@@ -60,7 +67,7 @@ interface RulesModalProps {
     onClose: () => void;
 }
 export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => (
-  <Modal isOpen={isOpen} onClose={onClose} title="Game Rules">
+  <Modal isOpen={isOpen} onClose={onClose} title="Game Rules" size="lg">
     <div className="space-y-6 text-[var(--text-secondary)]">
       <div>
         <h3 className="font-bold text-lg text-[var(--brand-from)] mb-2">Objective</h3>
