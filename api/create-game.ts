@@ -10,7 +10,6 @@ export default async function handler(req: any, res: any) {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    
     if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
       console.error('Redis environment variables not set');
       return res.status(500).json({ error: 'Redis not configured' });

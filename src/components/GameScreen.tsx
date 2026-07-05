@@ -15,7 +15,6 @@ import { HomeIcon } from './Icons';
 import Confetti from './Confetti';
 import { gameService } from '../services/gameService';
 
-
 interface GameScreenProps {
   onReturnToLobby: () => void;
   gameCode: string;
@@ -25,7 +24,7 @@ interface GameScreenProps {
 
 const generateGrid = (gameSeed: number, playerId: string): Grid => {
   const numbers = Array.from({ length: 25 }, (_, i) => i + 1);
-  
+
   const playerSeed = gameSeed + playerId.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
   const shuffled = seededShuffle(numbers, playerSeed);
   const grid: Grid = [];
@@ -40,7 +39,7 @@ const generateGrid = (gameSeed: number, playerId: string): Grid => {
 const Scoreboard: React.FC<{ me: Player; opponent?: Player; gameMode: GameMode }> = ({ me, opponent, gameMode }) => {
     const winsNeeded = gameMode === GameMode.BestOf3 ? 2 : (gameMode === GameMode.BestOf5 ? 3 : 1);
     const modeText = gameMode === GameMode.BestOf3 ? "Best of 3" : (gameMode === GameMode.BestOf5 ? "Best of 5" : "Normal Mode");
-    
+
     return (
         <div className="w-full bg-[var(--bg-secondary)] rounded-lg p-4 text-center">
             <p className="text-sm font-semibold text-[var(--text-primary)] mb-2">{modeText}</p>
@@ -62,12 +61,6 @@ const Scoreboard: React.FC<{ me: Player; opponent?: Player; gameMode: GameMode }
         </div>
     )
 };
-
-
-
-
-
-
 
 const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, playerName, playerId }) => {
   const [syncState, setSyncState] = useState<SyncState | null>(null);
@@ -113,7 +106,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     }
   }, [syncState?.currentTurnId]);
 
-  
   useEffect(() => {
     if (syncState && calledNumbers.size > 0) {
       const newGrid = playerGrid.map(row =>
@@ -128,10 +120,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     }
   }, [syncState?.calledNumbers, calledNumbers]);
 
-
-
-
-  
   useEffect(() => {
     if (!syncState) return;
 
@@ -139,9 +127,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
         setShowConfetti(true);
     }
   }, [syncState?.gameStatus, syncState?.gameWinnerId, syncState?.roundWinnerId, playerId]);
-  
 
-  
   useEffect(() => {
     if (showConfetti) {
         const timer = setTimeout(() => setShowConfetti(false), 5000);
@@ -161,23 +147,18 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
   const canDeclareBingo = useMemo(() => checkLocalWin(playerGrid), [playerGrid]);
 
-
-
-
-
-
   const handleCellClick = (r: number, c: number) => {
     if (syncState?.gameStatus === 'roundOver' || syncState?.gameStatus === 'gameOver') return;
 
     if (isGridLocked) {
         const cellNumber = playerGrid[r][c].number;
         if (calledNumbers.has(cellNumber)) {
-            
+
             const newGrid = playerGrid.map(row => row.map(cell => ({...cell})));
             newGrid[r][c].marked = !newGrid[r][c].marked;
             setPlayerGrid(newGrid);
         } else if (isMyTurn && !calledNumbers.has(cellNumber)) {
-            
+
             gameService.sendAction(gameCode, { type: 'REVEAL_NUMBER', payload: { playerId, number: cellNumber } }).catch(error => {
               console.error('Failed to reveal number:', error);
             });
@@ -208,7 +189,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
       console.error('Failed to declare bingo:', error);
     }
   };
-  
+
   const handleReadyClick = async () => {
       if(swapSelection) setSwapSelection(null);
       try {
@@ -225,8 +206,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
         console.error('Failed to next round:', error);
       }
   };
-
-
 
   if (!syncState || !me) {
     return <div className="min-h-screen w-full flex items-center justify-center">Loading game...</div>
@@ -276,8 +255,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
             <div className="w-full md:w-80 flex-shrink-0 glass-panel rounded-lg p-4 flex flex-col space-y-3 max-h-[75vh] overflow-hidden">
                 {syncState.gameMode !== GameMode.Normal && <Scoreboard me={me} opponent={opponent} gameMode={syncState.gameMode} />}
 
-
-                 
                 <div className="flex-grow flex flex-col space-y-4 min-h-0">
                     { syncState.gameStatus === 'waiting' ? (
                         <div className="flex-grow flex items-center justify-center p-4 bg-[var(--bg-secondary)] rounded-lg">
@@ -321,8 +298,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
                 </div>
             </div>
         </div>
-        <BingoModal 
-            isOpen={syncState.gameStatus === 'roundOver'} 
+        <BingoModal
+            isOpen={syncState.gameStatus === 'roundOver'}
             onClose={() => {}} // Cannot close this modal manually
             onNextRound={handleNextRound}
             achievedPatterns={syncState.lastAchievedPatterns ?? []}

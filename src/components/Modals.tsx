@@ -25,15 +25,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 
   }, [isOpen]);
 
   if (!isOpen || !modalRoot) return null;
-  
+
   const handleClose = () => {
       onClose();
   }
-  
-  const sizeClasses = size === 'lg' 
-    ? 'max-w-sm md:max-w-2xl' 
-    : size === 'md' 
-      ? 'max-w-sm md:max-w-md' 
+
+  const sizeClasses = size === 'lg'
+    ? 'max-w-sm md:max-w-2xl'
+    : size === 'md'
+      ? 'max-w-sm md:max-w-md'
       : 'max-w-sm';
 
   const modalContent = (
@@ -58,7 +58,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 
       `}</style>
     </div>
   );
-  
+
   return ReactDOM.createPortal(modalContent, modalRoot);
 };
 
@@ -153,11 +153,11 @@ interface GameOverModalProps {
     achievedPatterns: string[];
 }
 export const GameOverModal: React.FC<GameOverModalProps> = ({ isOpen, onClose, onPlayAgain, me, opponent, isWinner, gameMode, achievedPatterns }) => {
-    
+
     const handlePlayAgain = () => {
         onPlayAgain();
     }
-    
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={isWinner ? "You are the Champion!" : "Good Game!"}>
              <div className="text-center space-y-6">
@@ -185,7 +185,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({ isOpen, onClose, o
                         ))}
                     </div>
                 )}
-                
+
                 <div className="flex justify-center space-x-4 pt-4">
                     <button onClick={handlePlayAgain} className="px-8 py-3 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-md hover:opacity-90 transition-opacity btn-glow">Play Again</button>
                 </div>

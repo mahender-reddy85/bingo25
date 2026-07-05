@@ -14,8 +14,6 @@ const handlePlayerReady = (state: SyncState, playerId: string): SyncState => {
   };
 };
 
-
-
 const handleRevealNumber = (state: SyncState, playerId: string, number: number): SyncState => {
   if (state.gameStatus === 'playing' && state.currentTurnId !== playerId) {
     return state;
@@ -25,7 +23,6 @@ const handleRevealNumber = (state: SyncState, playerId: string, number: number):
     return state;
   }
 
-  
   if (state.calledNumbers.includes(number)) {
     return state;
   }
@@ -95,8 +92,6 @@ const handleNextRound = (state: SyncState, playerId: string): SyncState => {
     currentTurnId: state.roundWinnerId,
   };
 };
-
-
 
 const checkWin = (grid: Grid): { achieved: boolean; patterns: string[] } => {
   const patterns: string[] = [];

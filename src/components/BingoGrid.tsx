@@ -34,7 +34,7 @@ const GridCell: React.FC<{
   } else {
     baseClasses += " cursor-default";
   }
-  
+
   let cellClasses = "";
 
   if(isWinning) {
@@ -66,10 +66,9 @@ const GridCell: React.FC<{
 });
 
 const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers, calledBy, ownPlayerId, swapSelection, isGridLocked, isMyTurn }) => {
-    
-    
+
     const winningCells = new Set<string>();
-    
+
     const linePatterns = [WinPattern.ROW_0, WinPattern.ROW_1, WinPattern.ROW_2, WinPattern.ROW_3, WinPattern.ROW_4,
       WinPattern.COL_0, WinPattern.COL_1, WinPattern.COL_2, WinPattern.COL_3, WinPattern.COL_4,
       WinPattern.DIAG_1, WinPattern.DIAG_2];

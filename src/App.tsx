@@ -1,11 +1,9 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GameState, GameMode } from './types.js';
 import GameScreen from './components/GameScreen';
 import { RulesModal } from './components/Modals';
 import { RulesIcon } from './components/Icons';
 import { gameService } from './services/gameService';
-
 
 const DecorativeBingoBoard = () => (
     <div className="relative -top-2 w-24 h-24 grid grid-cols-5 gap-0.5 p-0.5 bg-slate-900/50 rounded-lg transform-gpu -rotate-12 select-none opacity-50 hidden md:grid animate-text-pop-up">
@@ -182,10 +180,6 @@ const MultiplayerLobby: React.FC<{
   );
 };
 
-
-
-
-
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.Lobby);
   const [gameCode, setGameCode] = useState<string>('');
@@ -206,8 +200,6 @@ const App: React.FC = () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [gameState, gameCode, playerId]);
-
-
 
   const handleCreateGame = (mode: GameMode) => {
     const code = Math.floor(1000 + Math.random() * 9000).toString();
@@ -230,13 +222,13 @@ const App: React.FC = () => {
         try {
             const existingGame = await gameService.getGame(code);
 
-            if (existingGame) { 
+            if (existingGame) {
                  if (existingGame.players.length >= 2 && !existingGame.players.find(p => p.id === playerId)) {
                     alert("Game is full!");
                     return;
                 }
                 await gameService.joinGame(code, player);
-            } else { 
+            } else {
                 await gameService.createGame(code, gameMode, player);
             }
 
@@ -257,9 +249,9 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     if (gameState === GameState.InProgress) {
-      return <GameScreen 
-        onReturnToLobby={returnToLobby} 
-        gameCode={gameCode} 
+      return <GameScreen
+        onReturnToLobby={returnToLobby}
+        gameCode={gameCode}
         playerName={playerName}
         playerId={playerId}
       />;

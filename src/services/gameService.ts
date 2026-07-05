@@ -68,14 +68,14 @@ class GameService {
   }
 
   startPolling(gameCode: string) {
-    if (this.pollingIntervals[gameCode]) return; 
+    if (this.pollingIntervals[gameCode]) return;
 
     this.pollingIntervals[gameCode] = setInterval(async () => {
       const game = await this.getGame(gameCode);
       if (game && this.listeners[gameCode]) {
         this.listeners[gameCode].forEach(listener => listener(game));
       }
-    }, 1000); 
+    }, 1000);
   }
 
   stopPolling(gameCode: string) {
@@ -86,7 +86,7 @@ class GameService {
   }
 
   leaveGame(gameCode: string, playerId: string) {
-    
+
     this.stopPolling(gameCode);
   }
 }

@@ -57,8 +57,6 @@ export interface WinPatternConfig {
 }
 
 export type WinState = Record<WinPattern, boolean>;
-  
-
 
 export interface Player {
     id: string;
@@ -67,8 +65,6 @@ export interface Player {
     isReady: boolean;
     isConnected: boolean;
 }
-
-
 
 export interface SyncState {
     gameCode: string;
@@ -84,7 +80,6 @@ export interface SyncState {
     gameMode: GameMode;
     lastAchievedPatterns?: string[];
 }
-
 
 export type GameAction =
     | { type: 'PLAYER_READY'; payload: { playerId: string } }

@@ -48,7 +48,7 @@ const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
         update() {
           this.x += this.speedX;
           this.y += this.speedY;
-          this.speedY += 0.05; 
+          this.speedY += 0.05;
           this.spin += this.spinSpeed;
           if (this.y > height) {
             this.y = -this.size;
@@ -82,14 +82,14 @@ const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
         }
         animationFrameId = requestAnimationFrame(animate);
       }
-      
+
       const handleResize = () => {
         width = window.innerWidth;
         height = window.innerHeight;
         canvas.width = width;
         canvas.height = height;
       }
-      
+
       window.addEventListener('resize', handleResize);
 
       init();
