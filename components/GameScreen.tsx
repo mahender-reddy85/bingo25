@@ -14,10 +14,8 @@ import { BingoModal, GameOverModal } from './Modals';
 import { HomeIcon } from './Icons';
 import Confetti from './Confetti';
 import { gameService } from '../services/gameService';
-import { generateSeed, createSeededRandom, seededShuffle } from '../utils';
+import { seededShuffle } from '../utils';
 
-// --- Seeded Random Functions ---
-// Removed duplicate implementations since imported from utils
 
 interface GameScreenProps {
   onReturnToLobby: () => void;
