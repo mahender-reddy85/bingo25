@@ -6,8 +6,6 @@
 
 A real-time multiplayer 1–25 Bingo game. Create a game, share the code with a friend, and compete to see who gets BINGO first!
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mahender-reddy85/bingo25)
-
 [Live Demo](https://bingo25-eight.vercel.app) · [Report Bug](https://github.com/mahender-reddy85/bingo25/issues)
 
 </div>
