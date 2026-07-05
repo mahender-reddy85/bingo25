@@ -1,5 +1,6 @@
+import { CallerSpeed, WinPattern, WinState, Grid, WinPatternConfig } from '../types.js';
 
-import { CallerSpeed, WinPattern, WinState, Grid, WinPatternConfig } from './types.js';
+// --- Constants ---
 
 export const CALLER_SPEEDS: Record<CallerSpeed, number> = {
   [CallerSpeed.Slow]: 3000,
@@ -51,7 +52,6 @@ const getWinningBlackoutCells = () => {
     return cells;
 }
 
-
 export const WIN_PATTERNS_CONFIG: Record<WinPattern, WinPatternConfig> = {
   // Rows
   [WinPattern.ROW_0]: { name: 'Row 1', description: 'Complete the first row', check: grid => grid[0].every(c => c.marked), getWinningCells: () => getWinningRowCells(0) },
@@ -80,4 +80,41 @@ export const WIN_PATTERNS_CONFIG: Record<WinPattern, WinPatternConfig> = {
   }, getWinningCells: getWinningStampCells },
   [WinPattern.X_PATTERN]: { name: 'X-Pattern', description: 'Complete both diagonals', check: grid => WIN_PATTERNS_CONFIG[WinPattern.DIAG_1].check(grid) && WIN_PATTERNS_CONFIG[WinPattern.DIAG_2].check(grid), getWinningCells: () => [...getWinningDiag1Cells(), ...getWinningDiag2Cells()] },
   [WinPattern.BLACKOUT]: { name: 'Blackout', description: 'Mark all numbers', check: grid => grid.flat().every(c => c.marked), getWinningCells: getWinningBlackoutCells },
+};
+
+// --- Utilities ---
+
+export const generateSeed = (gameCode: string, round = 1) => {
+  let hash = 0;
+  const str = `${gameCode}-${round}`;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  return hash;
+};
+
+export const createSeededRandom = (seed: number) => {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+};
+
+export const seededShuffle = <T,>(array: T[], seed: number): T[] => {
+  const newArray = [...array];
+  const random = createSeededRandom(seed);
+  let currentIndex = newArray.length;
+  let randomIndex;
+
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(random() * currentIndex);
+    currentIndex--;
+    [newArray[currentIndex], newArray[randomIndex]] = [
+      newArray[randomIndex], newArray[currentIndex]];
+  }
+  return newArray;
 };

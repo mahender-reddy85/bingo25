@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { Grid, WinState, WinPattern, GameMode, SyncState, Player } from '../types.js';
-import { WIN_PATTERNS_CONFIG } from '../constants.js';
+import { WIN_PATTERNS_CONFIG, seededShuffle } from '../utils/index.js';
 import BingoGrid from './BingoGrid';
 
 const checkLocalWin = (grid: Grid): boolean => {
@@ -14,7 +14,6 @@ import { BingoModal, GameOverModal } from './Modals';
 import { HomeIcon } from './Icons';
 import Confetti from './Confetti';
 import { gameService } from '../services/gameService';
-import { seededShuffle } from '../utils';
 
 
 interface GameScreenProps {

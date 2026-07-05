@@ -44,21 +44,22 @@ bingo/
 │   ├── join-game.ts            # POST /api/join-game
 │   └── game/
 │       └── [gameCode].ts       # GET/POST /api/game/:code
-├── components/
-│   ├── BingoGrid.tsx           # 5×5 interactive bingo grid
-│   ├── GameScreen.tsx          # Main game UI with scoreboard
-│   ├── Modals.tsx              # Rules, Round Won, Game Over modals
-│   ├── Confetti.tsx            # Canvas-based confetti animation
-│   └── Icons.tsx               # SVG icon components
-├── services/
-│   └── gameService.ts          # API client with polling for real-time sync
+├── src/                        # Frontend application code
+│   ├── components/
+│   │   ├── BingoGrid.tsx       # 5×5 interactive bingo grid
+│   │   ├── GameScreen.tsx      # Main game UI with scoreboard
+│   │   ├── Modals.tsx          # Rules, Round Won, Game Over modals
+│   │   ├── Confetti.tsx        # Canvas-based confetti animation
+│   │   └── Icons.tsx           # SVG icon components
+│   ├── services/
+│   │   └── gameService.ts      # API client with polling for real-time sync
+│   ├── utils/
+│   │   └── index.ts            # Game constants, seeds & seeded shuffle
+│   ├── App.tsx                 # Root component with lobby & routing
+│   ├── index.tsx               # React entry point
+│   └── types.ts                # TypeScript types & enums
 ├── public/
 │   └── index.css               # Global styles, themes, animations
-├── App.tsx                     # Root component with lobby & routing
-├── index.tsx                   # React entry point
-├── types.ts                    # TypeScript types & enums
-├── constants.ts                # Win patterns & game config
-├── utils.ts                    # Seeded random & shuffle utilities
 ├── index.html                  # HTML entry point
 ├── vite.config.ts              # Vite configuration
 ├── vercel.json                 # Vercel rewrites for API routes

@@ -1,6 +1,6 @@
-import { GameMode, Player, SyncState } from '../types.js';
+import { GameMode, Player, SyncState } from '../src/types.js';
 import { Redis } from '@upstash/redis';
-import { generateSeed } from '../utils.js';
+import { generateSeed } from '../src/utils/index.js';
 
 export default async function handler(req: any, res: any) {
   try {

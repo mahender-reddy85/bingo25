@@ -1,7 +1,6 @@
-import { GameAction, SyncState, Grid, WinPattern, GameMode } from '../../types.js';
-import { WIN_PATTERNS_CONFIG } from '../../constants.js';
+import { GameAction, SyncState, Grid, WinPattern, GameMode } from '../../src/types.js';
+import { WIN_PATTERNS_CONFIG, generateSeed } from '../../src/utils/index.js';
 import { Redis } from '@upstash/redis';
-import { generateSeed } from '../../utils.js';
 
 const handlePlayerReady = (state: SyncState, playerId: string): SyncState => {
   const players = state.players.map(p => p.id === playerId ? { ...p, isReady: true } : p);
