@@ -58,7 +58,7 @@ export interface WinPatternConfig {
 
 export type WinState = Record<WinPattern, boolean>;
   
-// --- Real-time Sync Types ---
+
 
 export interface Player {
     id: string;

@@ -66,10 +66,10 @@ const GridCell: React.FC<{
 });
 
 const BingoGrid: React.FC<BingoGridProps> = ({ grid, onCellClick, calledNumbers, calledBy, ownPlayerId, swapSelection, isGridLocked, isMyTurn }) => {
-    // Note: Win animation is now handled at the GameScreen level via modals/confetti
-    // This component focuses on displaying the grid state.
+    
+    
     const winningCells = new Set<string>();
-    // Calculate achieved patterns and highlight winning cells (only lines: rows, columns, diagonals)
+    
     const linePatterns = [WinPattern.ROW_0, WinPattern.ROW_1, WinPattern.ROW_2, WinPattern.ROW_3, WinPattern.ROW_4,
       WinPattern.COL_0, WinPattern.COL_1, WinPattern.COL_2, WinPattern.COL_3, WinPattern.COL_4,
       WinPattern.DIAG_1, WinPattern.DIAG_2];

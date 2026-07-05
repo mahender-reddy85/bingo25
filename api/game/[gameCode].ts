@@ -25,7 +25,7 @@ const handleRevealNumber = (state: SyncState, playerId: string, number: number):
     return state;
   }
 
-  // Check if the number is already called
+  
   if (state.calledNumbers.includes(number)) {
     return state;
   }

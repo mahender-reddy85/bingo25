@@ -25,7 +25,7 @@ interface GameScreenProps {
 
 const generateGrid = (gameSeed: number, playerId: string): Grid => {
   const numbers = Array.from({ length: 25 }, (_, i) => i + 1);
-  // Create player-specific seed by combining game seed with player ID
+  
   const playerSeed = gameSeed + playerId.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
   const shuffled = seededShuffle(numbers, playerSeed);
   const grid: Grid = [];
@@ -113,7 +113,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     }
   }, [syncState?.currentTurnId]);
 
-  // Auto-mark cells when numbers are called
+  
   useEffect(() => {
     if (syncState && calledNumbers.size > 0) {
       const newGrid = playerGrid.map(row =>
@@ -131,7 +131,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
 
 
-  // Effect for confetti
+  
   useEffect(() => {
     if (!syncState) return;
 
@@ -141,7 +141,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   }, [syncState?.gameStatus, syncState?.gameWinnerId, syncState?.roundWinnerId, playerId]);
   
 
-  // Effect to turn off confetti
+  
   useEffect(() => {
     if (showConfetti) {
         const timer = setTimeout(() => setShowConfetti(false), 5000);
@@ -172,12 +172,12 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
     if (isGridLocked) {
         const cellNumber = playerGrid[r][c].number;
         if (calledNumbers.has(cellNumber)) {
-            // Mark/unmark the cell if the number has been called
+            
             const newGrid = playerGrid.map(row => row.map(cell => ({...cell})));
             newGrid[r][c].marked = !newGrid[r][c].marked;
             setPlayerGrid(newGrid);
         } else if (isMyTurn && !calledNumbers.has(cellNumber)) {
-            // Reveal the number if it's the player's turn and the number hasn't been called
+            
             gameService.sendAction(gameCode, { type: 'REVEAL_NUMBER', payload: { playerId, number: cellNumber } }).catch(error => {
               console.error('Failed to reveal number:', error);
             });

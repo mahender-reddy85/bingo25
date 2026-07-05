@@ -68,14 +68,14 @@ class GameService {
   }
 
   startPolling(gameCode: string) {
-    if (this.pollingIntervals[gameCode]) return; // Already polling
+    if (this.pollingIntervals[gameCode]) return; 
 
     this.pollingIntervals[gameCode] = setInterval(async () => {
       const game = await this.getGame(gameCode);
       if (game && this.listeners[gameCode]) {
         this.listeners[gameCode].forEach(listener => listener(game));
       }
-    }, 1000); // Poll every 1 second
+    }, 1000); 
   }
 
   stopPolling(gameCode: string) {
@@ -86,7 +86,7 @@ class GameService {
   }
 
   leaveGame(gameCode: string, playerId: string) {
-    // For now, just stop polling. In a real implementation, you might notify the backend.
+    
     this.stopPolling(gameCode);
   }
 }

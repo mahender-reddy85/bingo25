@@ -48,7 +48,7 @@ const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
         update() {
           this.x += this.speedX;
           this.y += this.speedY;
-          this.speedY += 0.05; // gravity
+          this.speedY += 0.05; 
           this.spin += this.spinSpeed;
           if (this.y > height) {
             this.y = -this.size;

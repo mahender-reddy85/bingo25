@@ -230,13 +230,13 @@ const App: React.FC = () => {
         try {
             const existingGame = await gameService.getGame(code);
 
-            if (existingGame) { // Joining
+            if (existingGame) { 
                  if (existingGame.players.length >= 2 && !existingGame.players.find(p => p.id === playerId)) {
                     alert("Game is full!");
                     return;
                 }
                 await gameService.joinGame(code, player);
-            } else { // Creating
+            } else { 
                 await gameService.createGame(code, gameMode, player);
             }
 

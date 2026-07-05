@@ -9,7 +9,7 @@ export default async function handler(req: any, res: any) {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // Check if Redis is configured
+    
     if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
       console.error('Redis environment variables not set');
       return res.status(500).json({ error: 'Redis not configured' });
@@ -41,7 +41,7 @@ export default async function handler(req: any, res: any) {
       return res.status(500).json({ error: 'Failed to parse game data' });
     }
 
-    // Ensure calledBy and calledNumbers exist
+    
     if (!game.calledBy) {
       game.calledBy = {};
     }
@@ -49,10 +49,10 @@ export default async function handler(req: any, res: any) {
       game.calledNumbers = [];
     }
 
-    // Check if player is rejoining
+    
     const existingPlayerIndex = game.players.findIndex(p => p.id === player.id);
     if (existingPlayerIndex !== -1) {
-      // Reconnecting
+      
       const newState = { ...game };
       newState.players[existingPlayerIndex].isConnected = true;
       await redis.set(`game:${gameCode}`, JSON.stringify(newState));
