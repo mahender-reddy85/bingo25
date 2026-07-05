@@ -160,11 +160,11 @@ const MultiplayerLobby: React.FC<{
                 </div>
                 <div className="flex flex-col space-y-4 w-full">
                     <button onClick={handleCreate} className="w-full text-lg font-semibold py-3 px-6 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] rounded-lg transition-all hover:scale-105 animate-slide-in-bottom btn-glow" style={{ animationDelay: '0.4s' }}>Create Game</button>
-                    <button onClick={handleJoin} className="w-full text-lg font-semibold py-3 px-6 bg-[var(--bg-secondary)] rounded-lg hover:bg-slate-700 transition-colors animate-slide-in-bottom" style={{ animationDelay: '0.6s' }}>Join Game</button>
+                    <button onClick={handleJoin} className="w-full text-lg font-semibold py-3 px-6 bg-[var(--bg-secondary)] rounded-lg hover:bg-[var(--bg-hover)] transition-colors animate-slide-in-bottom" style={{ animationDelay: '0.6s' }}>Join Game</button>
                 </div>
             </div>
             <div className="flex space-x-4 mt-12">
-                <button onClick={() => setRulesModalOpen(true)} className="flex items-center space-x-2 px-4 py-2 bg-[var(--bg-secondary)] rounded-md hover:bg-slate-700 transition duration-300">
+                <button onClick={() => setRulesModalOpen(true)} className="flex items-center space-x-2 px-4 py-2 bg-[var(--bg-secondary)] rounded-md hover:bg-[var(--bg-hover)] transition duration-300">
                     <RulesIcon />
                     <span>Rules</span>
                 </button>

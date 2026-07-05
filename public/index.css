@@ -10,6 +10,7 @@
   --border-color: rgba(255, 255, 255, 0.1);
   --brand-from: #a855f7; /* purple-500 */
   --brand-to: #ec4899; /* pink-500 */
+  --bg-hover: #334155; /* slate-700 */
 }
 
 html.light {
@@ -22,6 +23,7 @@ html.light {
   --border-color: rgba(0, 0, 0, 0.12);
   --brand-from: #8b5cf6; /* violet-500 */
   --brand-to: #d946ef; /* fuchsia-500 */
+  --bg-hover: #ede9fe; /* violet-100 */
 }
 
 body {
