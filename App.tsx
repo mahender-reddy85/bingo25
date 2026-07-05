@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GameState, GameMode } from './types.js';
 import GameScreen from './components/GameScreen';
 import { RulesModal } from './components/Modals';
-import { RulesIcon, SunIcon, MoonIcon } from './components/Icons';
+import { RulesIcon } from './components/Icons';
 import { gameService } from './services/gameService';
 
 
@@ -107,7 +107,7 @@ const MultiplayerLobby: React.FC<{
             />
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button onClick={handleStart} disabled={!playerName.trim()} className="px-8 py-3 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg font-semibold transition-all hover:scale-105 disabled:opacity-50 btn-glow">Start Game</button>
-              <button onClick={handleCancel} className="px-8 py-3 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors">Cancel</button>
+              <button onClick={handleCancel} className="px-8 py-3 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors">Cancel</button>
             </div>
           </div>
         );
@@ -141,7 +141,7 @@ const MultiplayerLobby: React.FC<{
             />
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button onClick={handleJoinStart} disabled={joinCode.length !== 4 || !playerName.trim()} className="px-8 py-3 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg font-semibold disabled:opacity-50 transition-all hover:scale-105 btn-glow">Join Game</button>
-              <button onClick={handleCancel} className="px-8 py-3 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors">Cancel</button>
+              <button onClick={handleCancel} className="px-8 py-3 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors">Cancel</button>
             </div>
           </div>
         );
@@ -183,26 +183,7 @@ const MultiplayerLobby: React.FC<{
 };
 
 
-const ThemeToggle: React.FC<{ theme: string; onToggle: () => void }> = ({ theme, onToggle }) => {
-    const [isAnimating, setIsAnimating] = useState(false);
 
-    const handleClick = () => {
-        onToggle();
-        setIsAnimating(true);
-    };
-
-    return (
-        <button 
-            onClick={handleClick} 
-            onAnimationEnd={() => setIsAnimating(false)}
-            className="fixed top-4 right-4 z-50 p-2 rounded-full bg-[var(--bg-panel-solid)] text-[var(--text-primary)] transition-colors"
-        >
-            <span className={isAnimating ? 'theme-icon-animate' : ''}>
-                {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-            </span>
-        </button>
-    );
-};
 
 
 const App: React.FC = () => {
@@ -211,13 +192,6 @@ const App: React.FC = () => {
   const [playerName, setPlayerName] = useState<string>('');
   const [playerId] = useState(() => 'player-' + Math.random().toString(36).substring(2, 9));
   const [gameMode, setGameMode] = useState<GameMode>(GameMode.Normal);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove(theme === 'dark' ? 'light' : 'dark');
-    root.classList.add(theme);
-  }, [theme]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -233,9 +207,7 @@ const App: React.FC = () => {
     };
   }, [gameState, gameCode, playerId]);
 
-  const handleToggleTheme = () => {
-      setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
+
 
   const handleCreateGame = (mode: GameMode) => {
     const code = Math.floor(1000 + Math.random() * 9000).toString();
@@ -306,7 +278,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen text-[var(--text-primary)] antialiased">
-      <ThemeToggle theme={theme} onToggle={handleToggleTheme} />
       {renderContent()}
     </div>
   );

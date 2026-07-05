@@ -1,19 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 :root {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-panel: rgba(30, 41, 59, 0.5);
-  --bg-panel-solid: #1e293b;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --brand-from: #a855f7; /* purple-500 */
-  --brand-to: #ec4899; /* pink-500 */
-  --bg-hover: #334155; /* slate-700 */
-}
-
-html.light {
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-panel: rgba(255, 255, 255, 0.9);
@@ -24,6 +11,7 @@ html.light {
   --brand-from: #8b5cf6; /* violet-500 */
   --brand-to: #d946ef; /* fuchsia-500 */
   --bg-hover: #ede9fe; /* violet-100 */
+  color-scheme: light;
 }
 
 body {
@@ -44,6 +32,7 @@ body::before {
   animation: animate-background 20s ease-in-out infinite;
   will-change: background-position;
   z-index: 0;
+  opacity: 0.5;
 }
 
 body::after {
@@ -51,22 +40,12 @@ body::after {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
   background-size: 40px 40px;
   animation: animate-grid 30s linear infinite;
   z-index: 0;
   will-change: background-position;
-}
-
-html.light body::before {
-  opacity: 0.5;
-}
-
-html.light body::after {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
 }
 
 #root {
@@ -101,11 +80,6 @@ button:active:not(:disabled) {
 .glass-panel {
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  background: rgba(31, 41, 55, 0.8);
-  border: 1px solid rgba(75, 85, 99, 0.3);
-}
-
-html.light .glass-panel {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(0, 0, 0, 0.12);
 }
@@ -116,17 +90,17 @@ html.light .glass-panel {
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: #374151;
+  background: #f1f5f9;
   border-radius: 3px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #4b5563;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+  background: #94a3b8;
 }
 
 /* Prevent horizontal overflow */
@@ -138,15 +112,8 @@ html, body {
   overflow: hidden;
 }
 
-/* Reduce default spacing */
-
-/* Ensure text visibility in light mode */
-html.light {
-  color-scheme: light;
-}
-
-/* High contrast for marked cells in light mode */
-html.light .marked-cell {
+/* High contrast for marked cells */
+.marked-cell {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
   color: white !important;
   border-color: #1d4ed8 !important;
@@ -163,3 +130,4 @@ html.light .marked-cell {
 .animate-pulse-once {
   animation: pulse-once 0.5s ease-out;
 }
+
