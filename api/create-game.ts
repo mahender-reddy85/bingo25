@@ -38,10 +38,11 @@ export const handler: ApiHandler = async (req, res) => {
 
     const validationResult = CreateGameRequestSchema.safeParse(req.body);
     if (!validationResult.success) {
-      return res.status(400).json({ error: 'Invalid request body', details: validationResult.error.errors });
+      return res.status(400).json({ error: 'Invalid request body', details: validationResult.error.issues });
     }
 
     const { gameMode, player } = validationResult.data;
+    const validatedGameMode = gameMode as GameMode;
 
     let gameCode = generateGameCode();
     let attempts = 0;
@@ -74,7 +75,7 @@ export const handler: ApiHandler = async (req, res) => {
       round: 1,
       roundSeed: initialSeed,
       currentTurnId: player.id,
-      gameMode,
+      gameMode: validatedGameMode,
       version: 1,
     };
 

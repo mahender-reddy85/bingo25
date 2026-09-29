@@ -28,7 +28,7 @@ export const handler: ApiHandler = async (req, res) => {
 
     const validationResult = JoinGameRequestSchema.safeParse(req.body);
     if (!validationResult.success) {
-      return res.status(400).json({ error: 'Invalid request body', details: validationResult.error.errors });
+      return res.status(400).json({ error: 'Invalid request body', details: validationResult.error.issues });
     }
 
     const { gameCode, player } = validationResult.data;

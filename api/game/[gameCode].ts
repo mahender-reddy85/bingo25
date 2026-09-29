@@ -2,7 +2,7 @@ import { GameAction, SyncState, Grid, WinPattern, GameMode } from '../../src/typ
 import { WIN_PATTERNS_CONFIG, generateSeed, validateGrid, deriveMarkedCells } from '../../src/utils/index.js';
 import { GameActionSchema } from '../../src/utils/validation.js';
 import { Redis } from '@upstash/redis';
-import { ApiHandler } from './types.js';
+import { ApiHandler } from '../types.js';
 import crypto from 'crypto';
 
 const handlePlayerReady = (state: SyncState, playerId: string, grid?: Grid): SyncState => {
@@ -215,7 +215,7 @@ export const handler: ApiHandler = async (req, res) => {
     if (req.method === 'POST') {
       const validationResult = GameActionSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ error: 'Invalid action', details: validationResult.error.errors });
+        return res.status(400).json({ error: 'Invalid action', details: validationResult.error.issues });
       }
 
       const action = validationResult.data;

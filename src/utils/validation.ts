@@ -12,10 +12,19 @@ export const PlayerSchema = z.object({
   token: z.string().optional(),
 });
 
+export const CreateGamePlayerSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().max(20),
+  score: z.number().int().min(0),
+  isReady: z.boolean(),
+  isConnected: z.boolean(),
+  token: z.string().optional(),
+});
+
 export const CreateGameRequestSchema = z.object({
   gameCode: z.string().optional(),
   gameMode: GameModeSchema,
-  player: PlayerSchema,
+  player: CreateGamePlayerSchema,
 });
 
 export const JoinGameRequestSchema = z.object({
