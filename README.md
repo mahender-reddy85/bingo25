@@ -150,7 +150,7 @@ The game follows a strict server-authoritative architecture to prevent cheating:
 ## �🎮 How to Play
 
 1. **Create a Game** — Pick a mode (Normal / Best of 3 / Best of 5) and create a game
-2. **Share the Code** — Send the 4-digit code to your friend
+2. **Share the Code** — Send the 6-character code to your friend
 3. **Customize Your Grid** — Click two numbers to swap their positions
 4. **Ready Up** — Click "I'm Ready" to lock your grid
 5. **Take Turns** — Click an unmarked number on your grid to call it for both players
