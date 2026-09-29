@@ -1,4 +1,4 @@
-import { Grid, Cell } from '../types.js';
+import { Grid } from '../types.js';
 import { seededShuffle } from './index.js';
 
 export const generateGrid = (gameSeed: number, playerId: string): Grid => {

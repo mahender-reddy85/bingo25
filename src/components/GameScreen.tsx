@@ -1,7 +1,11 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Grid, WinState, WinPattern, GameMode, SyncState, Player } from '../types.js';
-import { WIN_PATTERNS_CONFIG, seededShuffle, generateGrid, deriveMarkedCells } from '../utils/index.js';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Grid, WinPattern, GameMode, SyncState, Player } from '../types.js';
+import { WIN_PATTERNS_CONFIG, generateGrid } from '../utils/index.js';
 import BingoGrid from './BingoGrid';
+import { BingoModal, GameOverModal } from './Modals';
+import { HomeIcon } from './Icons';
+import Confetti from './Confetti';
+import { gameService } from '../services/gameService';
 
 const checkLocalWin = (grid: Grid): boolean => {
   const linePatterns = [WinPattern.ROW_0, WinPattern.ROW_1, WinPattern.ROW_2, WinPattern.ROW_3, WinPattern.ROW_4,
@@ -10,10 +14,6 @@ const checkLocalWin = (grid: Grid): boolean => {
   const completedLines = linePatterns.filter(pattern => WIN_PATTERNS_CONFIG[pattern].check(grid));
   return completedLines.length >= 5;
 };
-import { BingoModal, GameOverModal } from './Modals';
-import { HomeIcon } from './Icons';
-import Confetti from './Confetti';
-import { gameService } from '../services/gameService';
 
 interface GameScreenProps {
   onReturnToLobby: () => void;
@@ -280,14 +280,14 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
         </div>
         <BingoModal
             isOpen={syncState.gameStatus === 'roundOver'}
-            onClose={() => {}} // Cannot close this modal manually
+            onClose={() => {}}
             onNextRound={handleNextRound}
             achievedPatterns={syncState.lastAchievedPatterns ?? []}
             isWinner={syncState.roundWinnerId === playerId}
         />
         <GameOverModal
             isOpen={syncState.gameStatus === 'gameOver'}
-            onClose={() => {}} // Cannot close
+            onClose={() => {}}
             onPlayAgain={onReturnToLobby}
             me={me}
             opponent={opponent}

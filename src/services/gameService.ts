@@ -15,7 +15,8 @@ class GameService {
       body: JSON.stringify({ gameCode, gameMode, player }),
     });
     if (!response.ok) {
-      throw new Error('Failed to create game');
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.error || `Failed to create game (${response.status})`);
     }
     const result = await response.json();
     if (result.playerToken) {
@@ -31,7 +32,8 @@ class GameService {
       body: JSON.stringify({ gameCode, player }),
     });
     if (!response.ok) {
-      throw new Error('Failed to join game');
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.error || `Failed to join game (${response.status})`);
     }
     const result = await response.json();
     if (result.playerToken) {
@@ -65,7 +67,8 @@ class GameService {
       body: JSON.stringify(action),
     });
     if (!response.ok) {
-      throw new Error('Failed to send action');
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.error || `Failed to send action (${response.status})`);
     }
     return response.json();
   }

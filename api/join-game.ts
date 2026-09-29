@@ -18,7 +18,7 @@ export const handler: ApiHandler = async (req, res) => {
 
     if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
       console.error('Redis environment variables not set');
-      return res.status(500).json({ error: 'Redis not configured' });
+      return res.status(500).json({ error: 'Redis is not configured. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN in Vercel settings.' });
     }
 
     const redis = new Redis({
@@ -79,9 +79,9 @@ export const handler: ApiHandler = async (req, res) => {
 
     console.log('Player joined:', player.id);
     res.status(200).json({ ...newState, playerToken });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in join-game handler:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error?.message ? `Database connection error: ${error.message}` : 'Internal server error' });
   }
 };
 

@@ -214,7 +214,7 @@ const App: React.FC = () => {
       setGameState(GameState.Creating);
     } catch (error) {
       console.error('Failed to create game:', error);
-      alert('Failed to create game. Please try again.');
+      alert((error as Error)?.message || 'Failed to create game. Please try again.');
     }
   };
 
@@ -245,7 +245,7 @@ const App: React.FC = () => {
             setGameState(GameState.InProgress);
         } catch (error) {
             console.error('Failed to start game:', error);
-            alert('Failed to start game. Please try again.');
+            alert((error as Error)?.message || 'Failed to start game. Please try again.');
         }
     }
   };
