@@ -6,8 +6,9 @@ class GameService {
   private baseUrl = '/api';
   private listeners: { [gameCode: string]: Listener[] } = {};
   private pollingIntervals: { [gameCode: string]: NodeJS.Timeout } = {};
+  private playerTokens: { [gameCode: string]: string } = {};
 
-  async createGame(gameCode: string, gameMode: GameMode, player: Player): Promise<SyncState> {
+  async createGame(gameCode: string, gameMode: GameMode, player: Player): Promise<SyncState & { playerToken?: string }> {
     const response = await fetch(`${this.baseUrl}/create-game`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -16,10 +17,14 @@ class GameService {
     if (!response.ok) {
       throw new Error('Failed to create game');
     }
-    return response.json();
+    const result = await response.json();
+    if (result.playerToken) {
+      this.playerTokens[result.gameCode] = result.playerToken;
+    }
+    return result;
   }
 
-  async joinGame(gameCode: string, player: Player): Promise<SyncState> {
+  async joinGame(gameCode: string, player: Player): Promise<SyncState & { playerToken?: string }> {
     const response = await fetch(`${this.baseUrl}/join-game`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -28,7 +33,11 @@ class GameService {
     if (!response.ok) {
       throw new Error('Failed to join game');
     }
-    return response.json();
+    const result = await response.json();
+    if (result.playerToken) {
+      this.playerTokens[gameCode] = result.playerToken;
+    }
+    return result;
   }
 
   async getGame(gameCode: string): Promise<SyncState | null> {
@@ -44,9 +53,15 @@ class GameService {
   }
 
   async sendAction(gameCode: string, action: GameAction): Promise<SyncState> {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const token = this.playerTokens[gameCode];
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${this.baseUrl}/game/${gameCode}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(action),
     });
     if (!response.ok) {
@@ -70,10 +85,15 @@ class GameService {
   startPolling(gameCode: string) {
     if (this.pollingIntervals[gameCode]) return;
 
+    let previousVersion: number | undefined;
+
     this.pollingIntervals[gameCode] = setInterval(async () => {
       const game = await this.getGame(gameCode);
       if (game && this.listeners[gameCode]) {
-        this.listeners[gameCode].forEach(listener => listener(game));
+        if (previousVersion === undefined || game.version !== previousVersion) {
+          this.listeners[gameCode].forEach(listener => listener(game));
+          previousVersion = game.version;
+        }
       }
     }, 1000);
   }

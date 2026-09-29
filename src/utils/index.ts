@@ -1,4 +1,5 @@
 import { CallerSpeed, WinPattern, WinState, Grid, WinPatternConfig } from '../types.js';
+export { generateGrid, validateGrid, deriveMarkedCells } from './grid.js';
 
 export const CALLER_SPEEDS: Record<CallerSpeed, number> = {
   [CallerSpeed.Slow]: 3000,

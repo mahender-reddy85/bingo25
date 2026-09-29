@@ -1,10 +1,26 @@
 import { GameMode, Player, SyncState } from '../src/types.js';
 import { Redis } from '@upstash/redis';
 import { generateSeed } from '../src/utils/index.js';
+import { CreateGameRequestSchema } from '../src/utils/validation.js';
+import { ApiHandler } from './types.js';
+import crypto from 'crypto';
 
-export default async function handler(req: any, res: any) {
+const generateGameCode = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+};
+
+const generatePlayerToken = (): string => {
+  return crypto.randomBytes(32).toString('hex');
+};
+
+export const handler: ApiHandler = async (req, res) => {
   try {
-    console.log('Create game request:', { method: req.method, body: req.body });
+    console.log('Create game request:', { method: req.method });
 
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -20,20 +36,38 @@ export default async function handler(req: any, res: any) {
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
 
-    const { gameCode, gameMode, player }: { gameCode: string; gameMode: GameMode; player: Player } = req.body;
-
-    if (!gameCode || !gameMode || !player) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    const validationResult = CreateGameRequestSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      return res.status(400).json({ error: 'Invalid request body', details: validationResult.error.errors });
     }
 
-    console.log('Creating game with code:', gameCode, 'mode:', gameMode, 'player:', player);
+    const { gameMode, player } = validationResult.data;
+
+    let gameCode = generateGameCode();
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    while (attempts < maxAttempts) {
+      const existing = await redis.get(`game:${gameCode}`);
+      if (!existing) {
+        break;
+      }
+      gameCode = generateGameCode();
+      attempts++;
+    }
+
+    if (attempts >= maxAttempts) {
+      return res.status(500).json({ error: 'Failed to generate unique game code' });
+    }
+
+    const playerToken = generatePlayerToken();
+    const playerWithToken = { ...player, token: playerToken, isConnected: true };
 
     const initialSeed = generateSeed(gameCode);
-    const hostWithStatus = { ...player, isConnected: true };
 
     const newState: SyncState = {
       gameCode,
-      players: [hostWithStatus],
+      players: [playerWithToken],
       calledNumbers: [],
       calledBy: {},
       gameStatus: 'waiting',
@@ -41,15 +75,18 @@ export default async function handler(req: any, res: any) {
       roundSeed: initialSeed,
       currentTurnId: player.id,
       gameMode,
+      version: 1,
     };
 
     console.log('Saving game state to Redis:', `game:${gameCode}`);
-    await redis.set(`game:${gameCode}`, JSON.stringify(newState));
+    await redis.set(`game:${gameCode}`, JSON.stringify(newState), { ex: 7200 });
 
-    console.log('Game created successfully');
-    res.status(200).json(newState);
+    console.log('Game created successfully with code:', gameCode);
+    res.status(200).json({ ...newState, playerToken });
   } catch (error) {
     console.error('Error in create-game handler:', error);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
+
+export default handler;

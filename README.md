@@ -14,14 +14,16 @@ A real-time multiplayer 1–25 Bingo game. Create a game, share the code with a 
 
 ## ✨ Features
 
-- 🎮 **Real-time Multiplayer** — Play with a friend using a 4-digit game code
+- 🎮 **Multiplayer** — Play with a friend using a 6-character game code
 - 🔀 **Customizable Grid** — Swap numbers to arrange your board before the game starts
 - 🏆 **Multiple Game Modes** — Normal, Best of 3, Best of 5
 - 🎨 **Dark & Light Themes** — Toggle between themes with a single click
 - 🎉 **Confetti Celebrations** — Win animations with particle effects
 - 📱 **Fully Responsive** — Works on desktop, tablet, and mobile
 - ⚡ **Turn-Based Gameplay** — Players take turns calling numbers
-- 🔒 **Server-Validated Wins** — BINGO declarations are verified server-side
+- 🔒 **Server-Authoritative** — All game state and validation happens server-side
+- 🔐 **Secure Sessions** — Player tokens prevent unauthorized actions
+- 🛡️ **Anti-Cheat** — Board validation prevents manipulation
 
 ## 🛠️ Tech Stack
 
@@ -31,6 +33,7 @@ A real-time multiplayer 1–25 Bingo game. Create a game, share the code with a 
 | **Build Tool** | Vite |
 | **Backend** | Vercel Serverless Functions |
 | **Database** | Upstash Redis |
+| **Validation** | Zod |
 | **Hosting** | Vercel |
 
 ## 📁 Project Structure
@@ -40,8 +43,9 @@ bingo/
 ├── api/                        # Vercel Serverless Functions
 │   ├── create-game.ts          # POST /api/create-game
 │   ├── join-game.ts            # POST /api/join-game
-│   └── game/
-│       └── [gameCode].ts       # GET/POST /api/game/:code
+│   ├── game/
+│   │   └── [gameCode].ts       # GET/POST /api/game/:code
+│   └── types.ts                # API handler types
 ├── src/                        # Frontend application code
 │   ├── components/
 │   │   ├── BingoGrid.tsx       # 5×5 interactive bingo grid
@@ -52,7 +56,9 @@ bingo/
 │   ├── services/
 │   │   └── gameService.ts      # API client with polling for real-time sync
 │   ├── utils/
-│   │   └── index.ts            # Game constants, seeds & seeded shuffle
+│   │   ├── index.ts            # Game constants, seeds & seeded shuffle
+│   │   ├── grid.ts             # Grid generation and validation
+│   │   └── validation.ts       # Zod schemas for API validation
 │   ├── App.tsx                 # Root component with lobby & routing
 │   ├── index.tsx               # React entry point
 │   └── types.ts                # TypeScript types & enums
@@ -97,11 +103,19 @@ UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
 
 ### 4. Run the app
 
+**Frontend-only development:**
 ```bash
 npm run dev
 ```
 
+**Full-stack development (with API):**
+```bash
+npm run vercel-dev
+```
+
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+> Note: `npm run dev` only runs the Vite frontend. Use `npm run vercel-dev` to run both the frontend and Vercel serverless functions locally.
 
 ## 🌐 Deploy to Vercel
 
@@ -112,7 +126,28 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
    - `UPSTASH_REDIS_REST_TOKEN`
 4. Deploy — Vercel auto-detects Vite and serverless functions
 
-## 🎮 How to Play
+## �️ Architecture
+
+### Server-Authoritative Game State
+
+The game follows a strict server-authoritative architecture to prevent cheating:
+
+- **Board Storage**: Player boards are stored server-side when players click "I'm Ready"
+- **Bingo Validation**: The server reconstructs the board with marked cells derived from called numbers, not client input
+- **Turn Validation**: All actions verify player turn and game state before execution
+- **Session Tokens**: Each player receives a secure token for authentication
+- **Optimistic Concurrency**: Version numbers prevent race conditions in multiplayer
+- **Game Expiration**: Redis TTL automatically cleans up games after 2 hours
+
+### Security Features
+
+- **Zod Validation**: All API requests are validated with runtime schema checking
+- **Board Validation**: Servers verify boards contain exactly 25 unique numbers (1-25) before accepting
+- **No Trust**: Server never trusts client-provided game state (scores, marked cells, wins)
+- **Unique Game Codes**: Server generates 6-character codes with collision detection
+- **Error Sanitization**: Internal error details are never exposed to clients
+
+## �🎮 How to Play
 
 1. **Create a Game** — Pick a mode (Normal / Best of 3 / Best of 5) and create a game
 2. **Share the Code** — Send the 4-digit code to your friend

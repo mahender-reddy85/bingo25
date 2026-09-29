@@ -1,20 +1,60 @@
 import { GameAction, SyncState, Grid, WinPattern, GameMode } from '../../src/types.js';
-import { WIN_PATTERNS_CONFIG, generateSeed } from '../../src/utils/index.js';
+import { WIN_PATTERNS_CONFIG, generateSeed, validateGrid, deriveMarkedCells } from '../../src/utils/index.js';
+import { GameActionSchema } from '../../src/utils/validation.js';
 import { Redis } from '@upstash/redis';
+import { ApiHandler } from './types.js';
+import crypto from 'crypto';
 
-const handlePlayerReady = (state: SyncState, playerId: string): SyncState => {
+const handlePlayerReady = (state: SyncState, playerId: string, grid?: Grid): SyncState => {
+  const player = state.players.find(p => p.id === playerId);
+  if (!player) {
+    return state;
+  }
+
+  if (grid) {
+    const validation = validateGrid(grid);
+    if (!validation.valid) {
+      console.error('Invalid grid submitted:', validation.error);
+      return state;
+    }
+
+    if (!state.boards) {
+      state.boards = {};
+    }
+    state.boards[playerId] = grid;
+  }
+
   const players = state.players.map(p => p.id === playerId ? { ...p, isReady: true } : p);
   const allReady = players.length === 2 && players.every(p => p.isReady);
+
+  if (allReady) {
+    const startingPlayerIndex = crypto.randomInt(0, 2);
+    return {
+      ...state,
+      players,
+      gameStatus: 'starting',
+      currentTurnId: players[startingPlayerIndex].id,
+      version: state.version + 1,
+    };
+  }
 
   return {
     ...state,
     players,
-    gameStatus: allReady ? 'starting' : 'waiting',
-    currentTurnId: allReady ? (Math.random() > 0.5 ? players[0].id : players[1].id) : state.currentTurnId
+    version: state.version + 1,
   };
 };
 
 const handleRevealNumber = (state: SyncState, playerId: string, number: number): SyncState => {
+  const player = state.players.find(p => p.id === playerId);
+  if (!player) {
+    return state;
+  }
+
+  if (!player.isReady) {
+    return state;
+  }
+
   if (state.gameStatus === 'playing' && state.currentTurnId !== playerId) {
     return state;
   }
@@ -23,33 +63,51 @@ const handleRevealNumber = (state: SyncState, playerId: string, number: number):
     return state;
   }
 
+  if (!Number.isInteger(number) || number < 1 || number > 25) {
+    return state;
+  }
+
   if (state.calledNumbers.includes(number)) {
     return state;
   }
 
   const nextTurnPlayer = state.players.find(p => p.id !== playerId);
+  if (!nextTurnPlayer) {
+    return state;
+  }
 
   return {
     ...state,
     calledNumbers: [...state.calledNumbers, number],
     calledBy: { ...state.calledBy, [number]: playerId },
     gameStatus: 'playing',
-    currentTurnId: nextTurnPlayer?.id,
+    currentTurnId: nextTurnPlayer.id,
+    version: state.version + 1,
   };
 };
 
-const handleDeclareBingo = (state: SyncState, playerId: string, grid: Grid): SyncState => {
+const handleDeclareBingo = (state: SyncState, playerId: string): SyncState => {
+  const player = state.players.find(p => p.id === playerId);
+  if (!player) {
+    return state;
+  }
+
   if (state.gameStatus !== 'playing') return state;
 
-  const { achieved, patterns } = checkWin(grid);
+  if (!state.boards || !state.boards[playerId]) {
+    console.error('No board found for player:', playerId);
+    return state;
+  }
+
+  const markedNumbers = new Set(state.calledNumbers);
+  const serverGrid = deriveMarkedCells(state.boards[playerId], markedNumbers);
+
+  const { achieved, patterns } = checkWin(serverGrid);
   if (!achieved) {
     return state;
   }
 
-  const winner = state.players.find(p => p.id === playerId);
-  if (!winner) return state;
-
-  const newScore = winner.score + 1;
+  const newScore = player.score + 1;
   const players = state.players.map(p => p.id === playerId ? { ...p, score: newScore } : p);
 
   const winsNeeded = state.gameMode === GameMode.BestOf3 ? 2 : (state.gameMode === GameMode.BestOf5 ? 3 : 1);
@@ -61,6 +119,7 @@ const handleDeclareBingo = (state: SyncState, playerId: string, grid: Grid): Syn
       gameStatus: 'gameOver',
       gameWinnerId: playerId,
       lastAchievedPatterns: patterns,
+      version: state.version + 1,
     };
   } else {
     return {
@@ -69,12 +128,22 @@ const handleDeclareBingo = (state: SyncState, playerId: string, grid: Grid): Syn
       gameStatus: 'roundOver',
       roundWinnerId: playerId,
       lastAchievedPatterns: patterns,
+      version: state.version + 1,
     };
   }
 };
 
 const handleNextRound = (state: SyncState, playerId: string): SyncState => {
+  const player = state.players.find(p => p.id === playerId);
+  if (!player) {
+    return state;
+  }
+
   if (state.gameStatus !== 'roundOver') return state;
+
+  if (!state.roundWinnerId) {
+    return state;
+  }
 
   const newRound = state.round + 1;
   const players = state.players.map(p => ({...p, isReady: false}));
@@ -90,6 +159,7 @@ const handleNextRound = (state: SyncState, playerId: string): SyncState => {
     roundWinnerId: undefined,
     lastAchievedPatterns: [],
     currentTurnId: state.roundWinnerId,
+    version: state.version + 1,
   };
 };
 
@@ -106,9 +176,9 @@ const checkWin = (grid: Grid): { achieved: boolean; patterns: string[] } => {
   return { achieved: patterns.length >= 5, patterns };
 };
 
-export default async function handler(req: any, res: any) {
+export const handler: ApiHandler = async (req, res) => {
   try {
-    console.log('Game action request:', { method: req.method, query: req.query, body: req.body });
+    console.log('Game action request:', { method: req.method, query: req.query });
 
     const { gameCode } = req.query;
 
@@ -133,31 +203,36 @@ export default async function handler(req: any, res: any) {
 
     const game: SyncState = typeof gameData === "string" ? JSON.parse(gameData) : gameData;
 
+    if (!game.version) {
+      game.version = 1;
+    }
+
     if (req.method === 'GET') {
       console.log('Returning game state for:', gameCode);
       return res.status(200).json(game);
     }
 
     if (req.method === 'POST') {
-      const action: GameAction = req.body;
-
-      if (!action || !action.type) {
-        return res.status(400).json({ error: 'Invalid action' });
+      const validationResult = GameActionSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ error: 'Invalid action', details: validationResult.error.errors });
       }
 
-      console.log('Processing action:', action.type, 'for game:', gameCode);
+      const action = validationResult.data;
+
+      console.log('Processing action:', action.type, 'for game:', gameCode, 'playerId:', action.payload.playerId);
 
       let newState = { ...game };
 
       switch (action.type) {
         case 'PLAYER_READY':
-          newState = handlePlayerReady(newState, action.payload.playerId);
+          newState = handlePlayerReady(newState, action.payload.playerId, action.payload.grid);
           break;
         case 'REVEAL_NUMBER':
           newState = handleRevealNumber(newState, action.payload.playerId, action.payload.number);
           break;
         case 'DECLARE_BINGO':
-          newState = handleDeclareBingo(newState, action.payload.playerId, action.payload.grid);
+          newState = handleDeclareBingo(newState, action.payload.playerId);
           break;
         case 'NEXT_ROUND':
           newState = handleNextRound(newState, action.payload.playerId);
@@ -167,7 +242,11 @@ export default async function handler(req: any, res: any) {
           return res.status(400).json({ error: 'Unknown action type' });
       }
 
-      await redis.set(`game:${gameCode}`, JSON.stringify(newState));
+      if (newState.version === game.version) {
+        return res.status(400).json({ error: 'No changes made' });
+      }
+
+      await redis.set(`game:${gameCode}`, JSON.stringify(newState), { ex: 7200 });
       console.log('Game state updated for action:', action.type);
       return res.status(200).json(newState);
     }
@@ -175,6 +254,8 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
     console.error('Error in game/[gameCode] handler:', error);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
+
+export default handler;

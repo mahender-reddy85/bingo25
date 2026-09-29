@@ -1,9 +1,16 @@
 import { Player, SyncState } from '../src/types.js';
 import { Redis } from '@upstash/redis';
+import { JoinGameRequestSchema } from '../src/utils/validation.js';
+import { ApiHandler } from './types.js';
+import crypto from 'crypto';
 
-export default async function handler(req: any, res: any) {
+const generatePlayerToken = (): string => {
+  return crypto.randomBytes(32).toString('hex');
+};
+
+export const handler: ApiHandler = async (req, res) => {
   try {
-    console.log('Join game request:', { method: req.method, body: req.body });
+    console.log('Join game request:', { method: req.method });
 
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -19,13 +26,14 @@ export default async function handler(req: any, res: any) {
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
 
-    const { gameCode, player }: { gameCode: string; player: Player } = req.body;
-
-    if (!gameCode || !player) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    const validationResult = JoinGameRequestSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      return res.status(400).json({ error: 'Invalid request body', details: validationResult.error.errors });
     }
 
-    console.log('Joining game with code:', gameCode, 'player:', player);
+    const { gameCode, player } = validationResult.data;
+
+    console.log('Joining game with code:', gameCode, 'playerId:', player.id);
 
     const gameData = await redis.get(`game:${gameCode}`);
     if (!gameData) {
@@ -46,13 +54,16 @@ export default async function handler(req: any, res: any) {
     if (!game.calledNumbers) {
       game.calledNumbers = [];
     }
+    if (!game.version) {
+      game.version = 1;
+    }
 
     const existingPlayerIndex = game.players.findIndex(p => p.id === player.id);
     if (existingPlayerIndex !== -1) {
-
       const newState = { ...game };
       newState.players[existingPlayerIndex].isConnected = true;
-      await redis.set(`game:${gameCode}`, JSON.stringify(newState));
+      newState.version += 1;
+      await redis.set(`game:${gameCode}`, JSON.stringify(newState), { ex: 7200 });
       console.log('Player reconnected:', player.id);
       return res.status(200).json(newState);
     }
@@ -61,14 +72,17 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: 'Game is full' });
     }
 
-    const playerWithStatus = { ...player, isConnected: true };
-    const newState = { ...game, players: [...game.players, playerWithStatus] };
-    await redis.set(`game:${gameCode}`, JSON.stringify(newState));
+    const playerToken = generatePlayerToken();
+    const playerWithStatus = { ...player, token: playerToken, isConnected: true };
+    const newState = { ...game, players: [...game.players, playerWithStatus], version: game.version + 1 };
+    await redis.set(`game:${gameCode}`, JSON.stringify(newState), { ex: 7200 });
 
     console.log('Player joined:', player.id);
-    res.status(200).json(newState);
+    res.status(200).json({ ...newState, playerToken });
   } catch (error) {
     console.error('Error in join-game handler:', error);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
+
+export default handler;

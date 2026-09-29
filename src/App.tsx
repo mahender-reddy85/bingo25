@@ -90,6 +90,9 @@ const MultiplayerLobby: React.FC<{
   const renderContent = () => {
     switch (gameState) {
       case GameState.Creating:
+        if (!gameCode) {
+          return <div className="text-center">Creating game...</div>;
+        }
         return (
           <div className="text-center w-full max-w-sm glass-panel p-8 rounded-2xl">
             <h2 className="text-2xl text-[var(--text-secondary)] mb-4">Your Game Code</h2>
@@ -113,19 +116,19 @@ const MultiplayerLobby: React.FC<{
         return (
           <div className="text-center w-full max-w-sm glass-panel p-8 rounded-2xl">
             <h2 className="text-2xl text-[var(--text-secondary)] mb-4">Join a Game</h2>
-            <p className="text-[var(--text-secondary)] mb-6">Enter the 4-digit code and your name.</p>
+            <p className="text-[var(--text-secondary)] mb-6">Enter the game code and your name.</p>
             <input
               type="text"
               value={joinCode}
-              onChange={(e) => setJoinCode(e.target.value.toUpperCase().replace(/[^0-9]/g, '').slice(0, 4))}
-              maxLength={4}
+              onChange={(e) => setJoinCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+              maxLength={6}
               className="w-full bg-[var(--bg-primary)] p-4 rounded-lg text-4xl font-bold tracking-widest text-center mb-1 focus:outline-none focus:ring-2 focus:ring-[var(--brand-from)]"
-              placeholder="1234"
+              placeholder="AB7K9Q"
             />
             <div className="h-6 mb-2">
-                {joinCode.length > 0 && joinCode.length < 4 && (
+                {joinCode.length > 0 && joinCode.length < 6 && (
                     <p className="text-red-500 text-xs">
-                        Game code must be 4 digits.
+                        Game code must be 6 characters.
                     </p>
                 )}
             </div>
@@ -138,7 +141,7 @@ const MultiplayerLobby: React.FC<{
               placeholder="Your Name"
             />
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button onClick={handleJoinStart} disabled={joinCode.length !== 4 || !playerName.trim()} className="px-8 py-3 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg font-semibold disabled:opacity-50 transition-all hover:scale-105 btn-glow">Join Game</button>
+              <button onClick={handleJoinStart} disabled={joinCode.length !== 6 || !playerName.trim()} className="px-8 py-3 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white rounded-lg font-semibold disabled:opacity-50 transition-all hover:scale-105 btn-glow">Join Game</button>
               <button onClick={handleCancel} className="px-8 py-3 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors">Cancel</button>
             </div>
           </div>
@@ -201,11 +204,18 @@ const App: React.FC = () => {
     };
   }, [gameState, gameCode, playerId]);
 
-  const handleCreateGame = (mode: GameMode) => {
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
-    setGameCode(code);
+  const handleCreateGame = async (mode: GameMode) => {
     setGameMode(mode);
-    setGameState(GameState.Creating);
+    const player = { id: playerId, name: '', score: 0, isReady: false, isConnected: false };
+
+    try {
+      const result = await gameService.createGame('', mode, player);
+      setGameCode(result.gameCode);
+      setGameState(GameState.Creating);
+    } catch (error) {
+      console.error('Failed to create game:', error);
+      alert('Failed to create game. Please try again.');
+    }
   };
 
   const handleJoinGame = () => {
@@ -213,7 +223,7 @@ const App: React.FC = () => {
   };
 
   const handleStartGame = async (code: string, name: string) => {
-    if (code.length === 4 && name.trim()) {
+    if (code.length >= 4 && name.trim()) {
         setGameCode(code);
         setPlayerName(name);
 

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { Grid, WinState, WinPattern, GameMode, SyncState, Player } from '../types.js';
-import { WIN_PATTERNS_CONFIG, seededShuffle } from '../utils/index.js';
+import { WIN_PATTERNS_CONFIG, seededShuffle, generateGrid, deriveMarkedCells } from '../utils/index.js';
 import BingoGrid from './BingoGrid';
 
 const checkLocalWin = (grid: Grid): boolean => {
@@ -21,20 +21,6 @@ interface GameScreenProps {
   playerName: string;
   playerId: string;
 }
-
-const generateGrid = (gameSeed: number, playerId: string): Grid => {
-  const numbers = Array.from({ length: 25 }, (_, i) => i + 1);
-
-  const playerSeed = gameSeed + playerId.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-  const shuffled = seededShuffle(numbers, playerSeed);
-  const grid: Grid = [];
-  for (let i = 0; i < 5; i++) {
-    grid.push(
-      shuffled.slice(i * 5, i * 5 + 5).map(number => ({ number, marked: false }))
-    );
-  }
-  return grid;
-};
 
 const Scoreboard: React.FC<{ me: Player; opponent?: Player; gameMode: GameMode }> = ({ me, opponent, gameMode }) => {
     const winsNeeded = gameMode === GameMode.BestOf3 ? 2 : (gameMode === GameMode.BestOf5 ? 3 : 1);
@@ -152,13 +138,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
     if (isGridLocked) {
         const cellNumber = playerGrid[r][c].number;
-        if (calledNumbers.has(cellNumber)) {
-
-            const newGrid = playerGrid.map(row => row.map(cell => ({...cell})));
-            newGrid[r][c].marked = !newGrid[r][c].marked;
-            setPlayerGrid(newGrid);
-        } else if (isMyTurn && !calledNumbers.has(cellNumber)) {
-
+        if (isMyTurn && !calledNumbers.has(cellNumber)) {
             gameService.sendAction(gameCode, { type: 'REVEAL_NUMBER', payload: { playerId, number: cellNumber } }).catch(error => {
               console.error('Failed to reveal number:', error);
             });
@@ -184,7 +164,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
 
   const checkBingo = async () => {
     try {
-      await gameService.sendAction(gameCode, { type: 'DECLARE_BINGO', payload: { playerId, grid: playerGrid } });
+      await gameService.sendAction(gameCode, { type: 'DECLARE_BINGO', payload: { playerId } });
     } catch (error) {
       console.error('Failed to declare bingo:', error);
     }
@@ -193,7 +173,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onReturnToLobby, gameCode, play
   const handleReadyClick = async () => {
       if(swapSelection) setSwapSelection(null);
       try {
-        await gameService.sendAction(gameCode, { type: 'PLAYER_READY', payload: { playerId } });
+        await gameService.sendAction(gameCode, { type: 'PLAYER_READY', payload: { playerId, grid: playerGrid } });
       } catch (error) {
         console.error('Failed to set ready:', error);
       }

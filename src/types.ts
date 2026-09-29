@@ -64,6 +64,7 @@ export interface Player {
     score: number;
     isReady: boolean;
     isConnected: boolean;
+    token?: string;
 }
 
 export interface SyncState {
@@ -79,12 +80,14 @@ export interface SyncState {
     currentTurnId?: string;
     gameMode: GameMode;
     lastAchievedPatterns?: string[];
+    boards?: Record<string, Grid>;
+    version: number;
 }
 
 export type GameAction =
-    | { type: 'PLAYER_READY'; payload: { playerId: string } }
+    | { type: 'PLAYER_READY'; payload: { playerId: string, grid?: Grid } }
     | { type: 'CALL_NUMBER'; payload: { playerId: string } }
     | { type: 'REVEAL_NUMBER'; payload: { playerId: string, number: number } }
-    | { type: 'DECLARE_BINGO'; payload: { playerId: string, grid: Grid } }
+    | { type: 'DECLARE_BINGO'; payload: { playerId: string } }
     | { type: 'NEXT_ROUND'; payload: { playerId: string } }
     | { type: 'SEND_MESSAGE'; payload: { playerId: string, message: string } };
