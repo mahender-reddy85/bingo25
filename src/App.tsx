@@ -230,19 +230,13 @@ const App: React.FC = () => {
         const player = { id: playerId, name, score: 0, isReady: false, isConnected: false };
 
         try {
-            const existingGame = await gameService.getGame(code);
-
-            if (existingGame) {
-                 if (existingGame.players.length >= 2 && !existingGame.players.find(p => p.id === playerId)) {
-                    alert("Game is full!");
-                    return;
-                }
+            if (gameState === GameState.Creating) {
+                gameService.updatePlayerName(playerId, name);
+                setGameState(GameState.InProgress);
+            } else if (gameState === GameState.Joining) {
                 await gameService.joinGame(code, player);
-            } else {
-                await gameService.createGame(code, gameMode, player);
+                setGameState(GameState.InProgress);
             }
-
-            setGameState(GameState.InProgress);
         } catch (error) {
             console.error('Failed to start game:', error);
             alert((error as Error)?.message || 'Failed to start game. Please try again.');
